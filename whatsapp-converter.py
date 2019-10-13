@@ -36,34 +36,54 @@ class bcolors:
 
 class dateFormats:
     # Define the time formats
+    # English
     dateStrEN = "EN"
-    dateEN = "^(\d{1,2})\/(\d{1,2})\/(\d{1,2})"
-    formatEN = "%d/%m/%y"
+    dateEN = r"""^((\d{1,2})\/(\d{1,2})\/(\d{1,2}))"""
+    dateFormatEN = "%d/%m/%y"
+    timeFormatEN = "%I:%M:%S %p"
+    patternEN = dateEN + r"""\,\ \b((1[0-2]|0?[1-9])\:([0-5][0-9])\:([0-5][0-9])\ ([AaPp][Mm]))\:\ (.*)"""
+
+    # German
     dateStrDE = "DE"
-    dateDE = "^(\d{1,2})\.(\d{1,2})\.(\d{1,2})"
-    formatDE = "%d.%m.%y"
+    dateDE = r"""^((\d{1,2})\.(\d{1,2})\.(\d{1,2}))"""
+    dateFormatDE = "%d.%m.%y"
+    timeFormatDE = "%H:%M:%S"
+    patternDE = dateDE + r"""\,\ \b((1[0-2]|0?[1-9])\:([0-5][0-9])\:([0-5][0-9])())\:\ (.*)"""
 
 def parse(chatline, verbose, debug):
     prefix = "***"
     dateLANG = dateFormats.dateEN
-    formatLANG = dateFormats.formatEN
+    dateFormatLANG = dateFormats.dateFormatEN
+    timeFormatLANG = dateFormats.timeFormatEN
+    pattern = dateFormats.patternEN
 
     # if verbose: print(prefix + chatline)
     # if verbose: print(bcolors.FAIL + prefix + chatline)
     # Identify the date format in the chat line
+
     if (re.match(re.compile(dateFormats.dateEN, re.VERBOSE), chatline)):
+        # English
         dateStr = dateFormats.dateStrEN
         dateLANG = dateFormats.dateEN
-        formatLANG = dateFormats.formatEN
+        dateFormatLANG = dateFormats.dateFormatEN
+        timeFormatLANG = dateFormats.timeFormatEN
+        pattern = dateFormats.patternEN
+
     elif (re.match(re.compile(dateFormats.dateDE, re.VERBOSE), chatline)):
+        # German
         dateStr = dateFormats.dateStrDE
         dateLANG = dateFormats.dateDE
-        formatLANG = dateFormats.formatDE
+        dateFormatLANG = dateFormats.dateFormatDE
+        timeFormatLANG = dateFormats.timeFormatDE
+        pattern = dateFormats.patternDE
 
-    match = re.match(re.compile(dateLANG, re.VERBOSE), chatline)
+    # Make the match, assign to the groups
+    match = re.match(re.compile(pattern, re.VERBOSE), chatline)
     if (match):
-        date = datetime.datetime.strptime(match.group(), formatLANG).date()
-        if debug: print(dateStr + " " + date.strftime("%Y-%m-%d"))
+        date = datetime.datetime.strptime(match.group(1), dateFormatLANG).date()
+        time = datetime.datetime.strptime(match.group(5), timeFormatLANG).time()
+
+        if debug: print(dateStr + " " + date.strftime("%Y-%m-%d") + " " + time.strftime("%H:%M:%S") + " " + match.group(10))
 
 print("Converting data now")
 
