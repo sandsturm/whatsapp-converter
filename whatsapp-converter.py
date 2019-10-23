@@ -45,14 +45,14 @@ class dateFormats:
     dateFormatEN = "%d/%m/%y"
     timeFormatEN = "%I:%M:%S %p"
     # patternEN = dateEN + r"""\,\ \b((1[0-2]|0?[1-9])\:([0-5][0-9])\:([0-5][0-9])\ ([AaPp][Mm]))\:\ (.*)\:\ (.*)"""
-    patternEN = dateEN + r"""\,\ \b((1[0-2]|0?[1-9])\:([0-5][0-9])\:([0-5][0-9])\ ([AaPp][Mm]))\:[^:](.+?)\:\ (.*)"""
+    patternEN = dateEN + r"""\,\ \b((1[0-9]|0?[1-9])\:([0-5][0-9])\:([0-5][0-9])\ ([AaPp][Mm]))\:[^:](.+?)\:\ (.*)"""
 
     # German
     dateStrDE = "DE"
     dateDE = r"""^((\d{1,2})\.(\d{1,2})\.(\d{1,2}))"""
     dateFormatDE = "%d.%m.%y"
-    timeFormatDE = "%H:%M:%S"
-    patternDE = dateDE + r"""\,\ \b((1[0-2]|0?[1-9])\:([0-5][0-9])\:([0-5][0-9])())\:\ (.*)\:\ (.*)"""
+    timeFormatDE = "%H:%M"
+    patternDE = dateDE + r"""\,\ \b((1[0-9]|0?[1-9])\:([0-5][0-9])()())\ \-\ (.*)\:\ (.*)"""
 
 class lastentry:
     lastlang = ""
@@ -66,6 +66,7 @@ def parse(chatline, verbose, debug):
     dateFormatLANG = dateFormats.dateFormatEN
     timeFormatLANG = dateFormats.timeFormatEN
     pattern = dateFormats.patternEN
+    pattern = "^((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,2}))\,\ (\d{1,2}:\d{1,2})(?::\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ ][^:])(.+?)\:\ (.*)"
     found = ""
     type = "empty"
     dataset = ""
@@ -79,7 +80,7 @@ def parse(chatline, verbose, debug):
         dateLANG = dateFormats.dateEN
         dateFormatLANG = dateFormats.dateFormatEN
         timeFormatLANG = dateFormats.timeFormatEN
-        pattern = dateFormats.patternEN
+        # pattern = dateFormats.patternEN
         found = dateFormats.dateStrEN
 
     elif (re.match(re.compile(dateFormats.dateDE, re.VERBOSE), chatline)):
@@ -88,7 +89,7 @@ def parse(chatline, verbose, debug):
         dateLANG = dateFormats.dateDE
         dateFormatLANG = dateFormats.dateFormatDE
         timeFormatLANG = dateFormats.timeFormatDE
-        pattern = dateFormats.patternDE
+        # pattern = dateFormats.patternDE
         found = dateFormats.dateStrDE
 
     elif (re.match(re.compile(r"^[\t ]*\n", re.VERBOSE), chatline)):
@@ -101,7 +102,7 @@ def parse(chatline, verbose, debug):
 
         # Create the dataset if commandline argument was to create a new line
         if (args.newline):
-            dataset = lastentry.lastlang + '|' + lastentry.lastdate + '|' + lastentry.lasttime + '|' + lastentry.lastname + '|' + newchatline.group( 0)
+            dataset = lastentry.lastlang + '|' + lastentry.lastdate + '|' + lastentry.lasttime + '|' + lastentry.lastname + '|' + newchatline.group(0)
             # if (verbose | debug): print(dataset)
             type = 'new'
 
@@ -114,16 +115,32 @@ def parse(chatline, verbose, debug):
     if (len(found) > 0):
         # Make the match, assign to the groups
         match = re.match(re.compile(pattern, re.VERBOSE), chatline)
-        if (match):
-            date = datetime.datetime.strptime(match.group(1), dateFormatLANG).date()
-            time = datetime.datetime.strptime(match.group(5), timeFormatLANG).time()
+
+        # TODO Wrong assignment of group 9 25/6/15, 1:42:12 AM: ‎Vishnu Gaud created this group
+        if (match and match.group(9) != 'M'):
+            # 21/12/19 Date Format
+            if (match.group(3) == '/' and match.group(8) == ': '):
+                date = datetime.datetime.strptime(match.group(1), "%d/%m/%y").date()
+            # 12/21/19 Date Format
+            elif (match.group(3) == '/' and match.group(8) == '- '):
+                date = datetime.datetime.strptime(match.group(1), "%m/%d/%y").date()
+            # 21.12.19 Date Format
+            else:
+                date = datetime.datetime.strptime(match.group(1), "%d.%m.%y").date()
+
+            if (match.group(7)):
+                time = datetime.datetime.strptime(match.group(6) + " " + match.group(7), "%I:%M %p").time()
+            else:
+                time = datetime.datetime.strptime(match.group(6), "%H:%M").time()
+
+            # Buffer date, time, name for next line messages
             lastentry.lastlang = dateStr
             lastentry.lastdate = date.strftime("%Y-%m-%d")
-            lastentry.lasttime = time.strftime("%H:%M:%S")
-            lastentry.lastname = match.group(10)
+            lastentry.lasttime = time.strftime("%H:%M")
+            lastentry.lastname = match.group(9)
 
             # Create the dataset for the new message
-            dataset = dateStr + '|' + date.strftime("%Y-%m-%d") + '|' + time.strftime("%H:%M:%S") + '|' + match.group(10) + '|' + match.group(11)
+            dataset = dateStr + '|' + date.strftime("%Y-%m-%d") + '|' + time.strftime("%H:%M") + '|' + str(match.group(9)) + '|' + match.group(10)
             if (verbose | debug): print(dataset)
 
             type = 'new'
@@ -134,12 +151,21 @@ print("Converting data now")
 counter = 0
 
 if (args.debug): print ("Open export file " + args.resultset)
+
+# Open result filename
 resultset = open (args.resultset, "w")
 
+# Write headers
+resultset.write('Date Format|Date|Time|Name|Message' + '\n')
+
+# TODO Append chatline with buffer before writing
 for chatline in content:
+    if (args.debug and chatline == ''): print(chatline)
     dataset = parse(chatline, args.verbose, args.debug)
     if (dataset[0] != 'empty'):
         counter += 1
         resultset.write(dataset[1] + '\n')
+        print('Wrote ' + str(counter) + ' lines', end='\r')
+
 print('Wrote ' + str(counter) + ' lines')
 resultset.close()
