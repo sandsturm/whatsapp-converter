@@ -41,6 +41,12 @@ Each line of the dataset will be converted to structured data which can be impor
 ```shell
 21/8/19, 11:28:51 PM: Jon Doe: Waste out of wealth 😂
 21.12.16, 23:29 - Alan Smith: Like a Rolex
+30.11.18, 10:57 - Nachrichten in diesem Chat sowie Anrufe sind jetzt mit Ende-zu-Ende-Verschlüsselung geschützt. Tippe für mehr Infos.
+30.11.18, 10:57 - Heise: Hallo :)
+30.11.18, 10:58 - Heise: Jetzt bin ich gespannt auf deine Antwort ;)
+1/26/19, 00:07 - Jon Doe: Schlaf gut
+18.05.19, 11:50:00: Alan Smith: Hier geht es los
+Das ist eine neue Zeile
 ```
 
 The resultset will look like this for each line:
@@ -48,4 +54,9 @@ The resultset will look like this for each line:
 Date Format|Date|Time|Name|Message
 EN|2019-8-21|23:28|Jon Doe|Waste out of wealth 😂
 DE|2016-12-21|23:29|Alan Smith|Like a Rolex
+DE|2018-11-30|10:57|Heise|Hallo :)
+DE|2018-11-30|10:58|Heise|Jetzt bin ich gespannt auf deine Antwort ;)
+EN|2019-01-26|00:07|Jon Doe|Schlaf gut
+DE|2019-05-18|11:50|Alan Smith|Hier geht es los
+DE|2019-05-18|11:50|Alan Smith|Das ist eine neue Zeile
 ```
