@@ -101,7 +101,8 @@ def parse(chatline, verbose, debug):
         newchatline = (re.match(re.compile(r"^(.*)", re.VERBOSE), chatline))
 
         # Create the dataset if commandline argument was to create a new line
-        if (args.newline):
+        # TODO if (args.newline):
+        if (1):
             dataset = lastentry.lastlang + '|' + lastentry.lastdate + '|' + lastentry.lasttime + '|' + lastentry.lastname + '|' + newchatline.group(0)
             # if (verbose | debug): print(dataset)
             type = 'new'

@@ -40,9 +40,12 @@ resultset       The filename of the resultset
 Each line of the dataset will be converted to structured data which can be imported into your Excel or LibreOffice sheet.
 ```shell
 21/8/19, 11:28:51 PM: Jon Doe: Waste out of wealth 😂
+21.12.16, 23:29 - Alan Smith: Like a Rolex
 ```
 
 The resultset will look like this for each line:
 ```shell
+Date Format|Date|Time|Name|Message
 EN|2019-8-21|23:28|Jon Doe|Waste out of wealth 😂
+DE|2016-12-21|23:29|Alan Smith|Like a Rolex
 ```
