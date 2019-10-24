@@ -2,7 +2,7 @@
 
 
 ## Introduction
-Use this application to convert your exported WhatsApp chat into a CSV file.
+Use this application to convert your exported WhatsApp chat to a CSV file.
 1. The conversion is done locally. No data is shared with the internet!
 2. The resultset is a CSV file which you can import into your favorite calculation application such as Excel or LibreOffice.
 
