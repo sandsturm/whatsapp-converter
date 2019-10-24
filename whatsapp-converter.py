@@ -7,10 +7,10 @@ from datetime import date
 
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", help="the WhatsApp file containing the exported chat")
-parser.add_argument("resultset", help="filename of the resultset", default="whatsapp_converted.csv", nargs='*')
+parser.add_argument("resultset", help="filename of the resultset", default="resultset.csv", nargs='*')
 parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
 parser.add_argument("-d", "--debug", help="increase output verbosity to debug", action="store_true")
-parser.add_argument("-nl", "--newline", help="message across various lines is counted as a new message", action="store_true")
+# parser.add_argument("-nl", "--newline", help="message across various lines is counted as a new message", action="store_true")
 args = parser.parse_args()
 
 if args.verbose:
