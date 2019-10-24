@@ -1,4 +1,4 @@
-# WhatsApp-converter
+# whatsapp-converter
 
 
 ## Introduction
@@ -9,17 +9,17 @@ Use this application to convert your exported WhatsApp chat to a CSV file.
 ## Usage
 Use the following command on the command line to get an overview of the available arguments.
 ```shell
-python WhatsApp-converter.py -h
+python whatsapp-converter.py -h
 ```
 
 The easy start is just to provide the filename of the exported WhatsApp chat. The application will process the chat and create a CSV file named *resultset.csv*.
 ```shell
-python WhatsApp-converter.py filename.txt
+python whatsapp-converter.py filename.txt
 ```
 
 Here is the list of all available options:
 ```shell
-WhatsApp-converter.py [-h] [-v] [-d] [-nl] filename [resultset.csv]
+whatsapp-converter.py [-h] [-v] [-d] [-nl] filename [resultset.csv]
 ```
 
 #### Mandatory Arguments
