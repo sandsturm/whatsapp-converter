@@ -1,6 +1,5 @@
 # whatsapp-converter
 
-
 ## Introduction
 Use this application to convert your exported WhatsApp chat to a CSV file.
 1. The conversion is done locally. No data is shared with the internet!
@@ -49,7 +48,7 @@ Each line of the dataset will be converted to structured data which can be impor
 Das ist eine neue Zeile
 ```
 
-The resultset will look like this for each line:
+The resultset file looks like this. In the default configuration new lines get the same date and time stamp and sender name as the previous line:
 ```shell
 Date Format|Date|Time|Name|Message
 EN|2019-8-21|23:28|Jon Doe|Waste out of wealth 😂
