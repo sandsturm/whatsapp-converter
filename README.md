@@ -19,7 +19,7 @@ python whatsapp-converter.py filename.txt
 
 Here is the list of all available options:
 ```shell
-whatsapp-converter.py [-h] [-v] [-d] [-nl] filename [resultset.csv]
+whatsapp-converter.py [-h] [-v] [-d] filename [resultset.csv]
 ```
 
 #### Mandatory Arguments
