@@ -5,28 +5,6 @@ import argparse
 import datetime
 from datetime import date
 
-parser = argparse.ArgumentParser()
-parser.add_argument("filename", help="the WhatsApp file containing the exported chat")
-parser.add_argument("resultset", help="filename of the resultset", default="resultset.csv", nargs='*')
-parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
-parser.add_argument("-d", "--debug", help="increase output verbosity to debug", action="store_true")
-# parser.add_argument("-nl", "--newline", help="message across various lines is counted as a new message", action="store_true")
-args = parser.parse_args()
-
-if args.verbose:
-   print("Verbosity turned on")
-
-if args.debug:
-   print("Debug turned on")
-
-try:
-    with io.open(args.filename, "r", encoding="utf-8") as file:
-        content = file.readlines()
-
-except IOError as e:
-    print("File \"" + args.filename + "\" cannot be found.")
-    sys.exit()
-
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -148,25 +126,52 @@ def parse(chatline, verbose, debug):
 
     return [type, dataset]
 
-print("Converting data now")
-counter = 0
+def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
+    if args.verbose:
+       print("Verbosity turned on")
 
-if (args.debug): print ("Open export file " + args.resultset)
+    if args.debug:
+       print("Debug turned on")
 
-# Open result filename
-resultset = open (args.resultset, "w")
+    try:
+        with io.open(args.filename, "r", encoding="utf-8") as file:
+            content = file.readlines()
 
-# Write headers
-resultset.write('Date Format|Date|Time|Name|Message' + '\n')
+    except IOError as e:
+        print("File \"" + args.filename + "\" cannot be found.")
+        sys.exit()
 
-# TODO Append chatline with buffer before writing
-for chatline in content:
-    if (args.debug and chatline == ''): print(chatline)
-    dataset = parse(chatline, args.verbose, args.debug)
-    if (dataset[0] != 'empty'):
-        counter += 1
-        resultset.write(dataset[1] + '\n')
-        print('Wrote ' + str(counter) + ' lines', end='\r')
+    print("Converting data now")
+    counter = 0
 
-print('Wrote ' + str(counter) + ' lines')
-resultset.close()
+    if (args.debug): print ("Open export file " + args.resultset)
+
+    # Open result filename
+    resultset = open (args.resultset, "w")
+
+    # Write headers
+    resultset.write('Date Format|Date|Time|Name|Message' + '\n')
+
+    # TODO Append chatline with buffer before writing
+    for chatline in content:
+        if (args.debug and chatline == ''): print(chatline)
+        dataset = parse(chatline, args.verbose, args.debug)
+        if (dataset[0] != 'empty'):
+            counter += 1
+            resultset.write(dataset[1] + '\n')
+            print('Wrote ' + str(counter) + ' lines', end='\r')
+
+    print('Wrote ' + str(counter) + ' lines')
+    resultset.close()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filename", help="the WhatsApp file containing the exported chat")
+    parser.add_argument("resultset", help="filename of the resultset", default="resultset.csv", nargs='*')
+    parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+    parser.add_argument("-d", "--debug", help="increase output verbosity to debug", action="store_true")
+
+    # parser.add_argument("-nl", "--newline", help="message across various lines is counted as a new message", action="store_true")
+    args = parser.parse_args()
+
+    convert(filename=args.filename, resultset=args.resultset, verbose=args.verbose, debug=args.debug)
