@@ -81,7 +81,7 @@ def parse(chatline, verbose, debug):
         # Create the dataset if commandline argument was to create a new line
         # TODO if (args.newline):
         if (1):
-            dataset = lastentry.lastlang + '|' + lastentry.lastdate + '|' + lastentry.lasttime + '|' + lastentry.lastname + '|' + newchatline.group(0)
+            dataset = lastentry.lastdate + ' ' + lastentry.lasttime + '|' + lastentry.lastdate + '|' + lastentry.lasttime + '|' + lastentry.lastname + '|' + newchatline.group(0)
             # if (verbose | debug): print(dataset)
             type = 'new'
 
@@ -119,7 +119,7 @@ def parse(chatline, verbose, debug):
             lastentry.lastname = match.group(9)
 
             # Create the dataset for the new message
-            dataset = dateStr + '|' + date.strftime("%Y-%m-%d") + '|' + time.strftime("%H:%M") + '|' + str(match.group(9)) + '|' + match.group(10)
+            dataset = date.strftime("%Y-%m-%d") + ' ' + time.strftime("%H:%M") + '|' + date.strftime("%Y-%m-%d") + '|' + time.strftime("%H:%M") + '|' + str(match.group(9)) + '|' + match.group(10)
             if (verbose | debug): print(dataset)
 
             type = 'new'
@@ -127,35 +127,35 @@ def parse(chatline, verbose, debug):
     return [type, dataset]
 
 def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
-    if args.verbose:
+    if verbose:
        print("Verbosity turned on")
 
-    if args.debug:
+    if debug:
        print("Debug turned on")
 
     try:
-        with io.open(args.filename, "r", encoding="utf-8") as file:
+        with io.open(filename, "r", encoding="utf-8") as file:
             content = file.readlines()
 
     except IOError as e:
-        print("File \"" + args.filename + "\" cannot be found.")
+        print("File \"" + filename + "\" cannot be found.")
         sys.exit()
 
     print("Converting data now")
     counter = 0
 
-    if (args.debug): print ("Open export file " + args.resultset)
+    if (debug): print ("Open export file " + resultset)
 
     # Open result filename
-    resultset = open (args.resultset, "w")
+    resultset = open (resultset, "w")
 
     # Write headers
-    resultset.write('Date Format|Date|Time|Name|Message' + '\n')
+    resultset.write('Date and Time|Date|Time|Name|Message' + '\n')
 
     # TODO Append chatline with buffer before writing
     for chatline in content:
-        if (args.debug and chatline == ''): print(chatline)
-        dataset = parse(chatline, args.verbose, args.debug)
+        if (debug and chatline == ''): print(chatline)
+        dataset = parse(chatline, verbose, debug)
         if (dataset[0] != 'empty'):
             counter += 1
             resultset.write(dataset[1] + '\n')

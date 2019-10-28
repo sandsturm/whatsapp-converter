@@ -50,12 +50,12 @@ Das ist eine neue Zeile
 
 The resultset file looks like this. In the default configuration new lines get the same date and time stamp and sender name as the previous line:
 ```shell
-Date Format|Date|Time|Name|Message
-EN|2019-8-21|23:28|Jon Doe|Waste out of wealth 😂
-DE|2016-12-21|23:29|Alan Smith|Like a Rolex
-DE|2018-11-30|10:57|Heise|Was geht ab?
-DE|2018-11-30|10:58|Heise|Mir geht es echt gut :)
-EN|2019-01-26|00:07|Jon Doe|Schlaf gut
-DE|2019-05-18|11:50|Alan Smith|Hier geht es los
-DE|2019-05-18|11:50|Alan Smith|Das ist eine neue Zeile
+Date and Time|Date|Time|Name|Message
+2019-8-21 23:28|2019-8-21|23:28|Jon Doe|Waste out of wealth 😂
+2016-12-21 23:29|2016-12-21|23:29|Alan Smith|Like a Rolex
+2018-11-30 10:57|2018-11-30|10:57|Heise|Was geht ab?
+2018-11-30 10:58|2018-11-30|10:58|Heise|Mir geht es echt gut :)
+2019-01-26 00:07|2019-01-26|00:07|Jon Doe|Schlaf gut
+2019-05-18 11:50|2019-05-18|11:50|Alan Smith|Hier geht es los
+2019-05-18 11:50|2019-05-18|11:50|Alan Smith|Das ist eine neue Zeile
 ```
