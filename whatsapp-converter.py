@@ -4,6 +4,7 @@ import sys
 import argparse
 import datetime
 from datetime import date
+from tqdm import tqdm
 
 class bcolors:
     HEADER = '\033[95m'
@@ -13,7 +14,7 @@ class bcolors:
     FAIL = '\033[91m'
     ENDC = '\033[0m'
     BOLD = '\033[1m'
-    UNDERchatline = '\033[4m'
+    UNDERLINE = '\033[4m'
 
 class dateFormats:
     # Define the time formats
@@ -38,7 +39,7 @@ class lastentry:
     lasttime = date.today()
     lastname = ""
 
-def parse(chatline, verbose, debug):
+def parse(line, verbose, debug):
     prefix = "***"
     dateLANG = dateFormats.dateEN
     dateFormatLANG = dateFormats.dateFormatEN
@@ -48,11 +49,11 @@ def parse(chatline, verbose, debug):
     found = ""
     type = "empty"
     dataset = ""
-    # if verbose: print(prefix + chatline)
-    # if verbose: print(bcolors.FAIL + prefix + chatline)
+    # if verbose: print(prefix + line)
+    # if verbose: print(bcolors.FAIL + prefix + line)
     # Identify the date format in the chat line
 
-    if (re.match(re.compile(dateFormats.dateEN, re.VERBOSE), chatline)):
+    if (re.match(re.compile(dateFormats.dateEN, re.VERBOSE), line)):
         # English
         dateStr = dateFormats.dateStrEN
         dateLANG = dateFormats.dateEN
@@ -61,7 +62,7 @@ def parse(chatline, verbose, debug):
         # pattern = dateFormats.patternEN
         found = dateFormats.dateStrEN
 
-    elif (re.match(re.compile(dateFormats.dateDE, re.VERBOSE), chatline)):
+    elif (re.match(re.compile(dateFormats.dateDE, re.VERBOSE), line)):
         # German
         dateStr = dateFormats.dateStrDE
         dateLANG = dateFormats.dateDE
@@ -70,30 +71,30 @@ def parse(chatline, verbose, debug):
         # pattern = dateFormats.patternDE
         found = dateFormats.dateStrDE
 
-    elif (re.match(re.compile(r"^[\t ]*\n", re.VERBOSE), chatline)):
+    elif (re.match(re.compile(r"^[\t ]*\n", re.VERBOSE), line)):
         # Empty line
-        if debug: print("Empty chatline removed")
+        if debug: print("Empty line removed")
 
     else:
-        if debug: print("Appending chatline found")
-        newchatline = (re.match(re.compile(r"^(.*)", re.VERBOSE), chatline))
+        if debug: print("Appending line found")
+        newline = (re.match(re.compile(r"^(.*)", re.VERBOSE), line))
 
         # Create the dataset if commandline argument was to create a new line
         # TODO if (args.newline):
         if (1):
-            dataset = lastentry.lastdate + ' ' + lastentry.lasttime + '|' + lastentry.lastdate + '|' + lastentry.lasttime + '|' + lastentry.lastname + '|' + newchatline.group(0)
+            dataset = lastentry.lastdate + ' ' + lastentry.lasttime + '|' + lastentry.lastdate + '|' + lastentry.lasttime + '|' + lastentry.lastname + '|' + newline.group(0)
             # if (verbose | debug): print(dataset)
             type = 'new'
 
         else:
             # Otherwise make sure it is appended to the existing line
-            dataset = newchatline.group(0)
+            dataset = newline.group(0)
             if (verbose | debug): print(dataset)
             type = 'append'
 
     if (len(found) > 0):
         # Make the match, assign to the groups
-        match = re.match(re.compile(pattern, re.VERBOSE), chatline)
+        match = re.match(re.compile(pattern, re.VERBOSE), line)
 
         # TODO Wrong assignment of group 9 25/6/15, 1:42:12 AM: ‎Vishnu Gaud created this group
         if (match and match.group(9) != 'M'):
@@ -127,6 +128,9 @@ def parse(chatline, verbose, debug):
     return [type, dataset]
 
 def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
+    # Store the number of lines of the input file
+    line_count = 0
+
     if verbose:
        print("Verbosity turned on")
 
@@ -134,6 +138,13 @@ def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
        print("Debug turned on")
 
     try:
+        # Count the number of total lines
+        with io.open(filename, "r", encoding="utf-8") as file:
+            for line in file:
+                # if line.strip():
+                line_count += 1
+
+        # Convert lines to csv
         with io.open(filename, "r", encoding="utf-8") as file:
             content = file.readlines()
 
@@ -152,14 +163,19 @@ def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
     # Write headers
     resultset.write('Date and Time|Date|Time|Name|Message' + '\n')
 
-    # TODO Append chatline with buffer before writing
-    for chatline in content:
-        if (debug and chatline == ''): print(chatline)
-        dataset = parse(chatline, verbose, debug)
+
+    # TODO Append line with buffer before writing
+    # Show progress via tqdm
+    for line in tqdm(content, total=line_count, ncols=120):
+        if (debug and line == ''): print(line)
+        dataset = parse(line, verbose, debug)
         if (dataset[0] != 'empty'):
-            counter += 1
             resultset.write(dataset[1] + '\n')
-            print('Wrote ' + str(counter) + ' lines', end='\r')
+
+        # Print progress
+        if line.strip():
+            counter += 1
+        # print('Wrote ' + str(counter) + ' lines of ' + str(line_count) + ' lines', end='\r')
 
     print('Wrote ' + str(counter) + ' lines')
     resultset.close()
