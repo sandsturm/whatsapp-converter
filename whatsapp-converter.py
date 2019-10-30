@@ -158,7 +158,7 @@ def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
     if (debug): print ("Open export file " + resultset)
 
     # Open result filename
-    resultset = open (resultset, "w")
+    resultset = io.open (resultset, "w", encoding="utf-8")
 
     # Write headers
     resultset.write('Date and Time|Date|Time|Name|Message' + '\n')
