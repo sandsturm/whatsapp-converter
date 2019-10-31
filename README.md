@@ -1,9 +1,9 @@
 # whatsapp-converter
 
 ## Introduction
-Use this application to convert your exported WhatsApp chat to a CSV file.
+Use this application to convert your exported WhatsApp chat to a CSV or ODS file.
 1. The conversion is done locally. No data is shared with the internet!
-2. The resultset is a CSV file which you can import into your favorite calculation application such as Excel or LibreOffice.
+2. The resultset is a CSV file which you can import into your favorite calculation application such as Excel or LibreOffice. You can also directly export to a LibreOffice spreadsheet file.
 
 ## Usage
 Use the following command on the command line to get an overview of the available arguments.
@@ -13,7 +13,12 @@ python whatsapp-converter.py -h
 
 The easy start is just to provide the filename of the exported WhatsApp chat. The application will process the chat and create a CSV file named *resultset.csv*.
 ```shell
-python whatsapp-converter.py filename.txt
+python whatsapp-converter.py whatsapp-export.txt
+```
+
+If you want to export to a LibreOffice spreadsheet file instead, make sure to add the filename at the end, e.g. *resultset.ods*.
+```shell
+python whatsapp-converter.py whatsapp-export.txt resultset.ods
 ```
 
 Here is the list of all available options:
@@ -24,7 +29,7 @@ whatsapp-converter.py [-h] [-v] [-d] filename [resultset.csv]
 #### Mandatory Arguments
 ```shell
 filename       The WhatsApp file containing the exported chat
-resultset       The filename of the resultset
+resultset       filename of the resultset, default resultset.csv. Use .csv to write a comma separated file. Use .ods to write to a LibreOffice spreadsheet file
 ```
 
 #### Optional Arguments

@@ -3,6 +3,7 @@ import re
 import sys
 import argparse
 import datetime
+import xlwt
 from datetime import date
 from tqdm import tqdm
 
@@ -47,8 +48,7 @@ def parse(line, verbose, debug):
     pattern = dateFormats.patternEN
     pattern = "^((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,2}))\,\ (\d{1,2}:\d{1,2})(?::\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ ][^:])(.+?)\:\ (.*)"
     found = ""
-    type = "empty"
-    dataset = ""
+    dataset = ['empty', '', '', '', '', '']
     # if verbose: print(prefix + line)
     # if verbose: print(bcolors.FAIL + prefix + line)
     # Identify the date format in the chat line
@@ -82,15 +82,13 @@ def parse(line, verbose, debug):
         # Create the dataset if commandline argument was to create a new line
         # TODO if (args.newline):
         if (1):
-            dataset = lastentry.lastdate + ' ' + lastentry.lasttime + '|' + lastentry.lastdate + '|' + lastentry.lasttime + '|' + lastentry.lastname + '|' + newline.group(0)
+            dataset = ['new', lastentry.lastdate, lastentry.lasttime, lastentry.lastname, newline.group(0)]
             # if (verbose | debug): print(dataset)
-            type = 'new'
 
         else:
             # Otherwise make sure it is appended to the existing line
-            dataset = newline.group(0)
+            dataset = ['append', '', '', '', newline.group(0)]
             if (verbose | debug): print(dataset)
-            type = 'append'
 
     if (len(found) > 0):
         # Make the match, assign to the groups
@@ -120,12 +118,10 @@ def parse(line, verbose, debug):
             lastentry.lastname = match.group(9)
 
             # Create the dataset for the new message
-            dataset = date.strftime("%Y-%m-%d") + ' ' + time.strftime("%H:%M") + '|' + date.strftime("%Y-%m-%d") + '|' + time.strftime("%H:%M") + '|' + str(match.group(9)) + '|' + match.group(10)
+            dataset = ['new', date.strftime("%Y-%m-%d"), time.strftime("%H:%M"), str(match.group(9)), match.group(10)]
             if (verbose | debug): print(dataset)
 
-            type = 'new'
-
-    return [type, dataset]
+    return dataset
 
 def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
     # Store the number of lines of the input file
@@ -153,16 +149,35 @@ def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
         sys.exit()
 
     print("Converting data now")
+
+    # Count number of chatlines without empty lines
     counter = 0
 
-    if (debug): print ("Open export file " + resultset)
+    if (debug): print ("Open export file " + resultset[0])
 
-    # Open result filename
-    resultset = io.open (resultset, "w", encoding="utf-8")
+    # Define export file header
+    header = ['Date and Time', 'Date', 'Time', 'Name', 'Message']
 
-    # Write headers
-    resultset.write('Date and Time|Date|Time|Name|Message' + '\n')
+    # Select export formats
+    if str(resultset[0]).endswith('.csv'):
 
+        # Open result filename
+        csv = io.open (resultset[0], "w", encoding="utf-8")
+
+        # Write headers
+        csv.write(header[0] + '|' + header[1] + '|' + header[2] + '|' + header[3] + '|' + header[4] + '|' + '\n')
+
+    elif str(resultset[0]).endswith('.ods'):
+        wb = xlwt.Workbook()
+        ws = wb.add_sheet(filename)
+
+        ws.write(0, 0, header[0])
+        ws.write(0, 1, header[1])
+        ws.write(0, 2, header[2])
+        ws.write(0, 3, header[3])
+        ws.write(0, 4, header[4])
+
+        ws_counter = 1
 
     # TODO Append line with buffer before writing
     # Show progress via tqdm
@@ -170,20 +185,38 @@ def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
         if (debug and line == ''): print(line)
         dataset = parse(line, verbose, debug)
         if (dataset[0] != 'empty'):
-            resultset.write(dataset[1] + '\n')
+
+            # Write to .csv file
+            if str(resultset[0]).endswith('.csv'):
+                csv.write(dataset[1] + ' ' + dataset[2] + '|' + dataset[1] + '|' + dataset[2] + '|' + dataset[3] + '|' + dataset[4] + '\n')
+
+            # Write to .ods file
+            elif str(resultset[0]).endswith('.ods'):
+                ws.write(ws_counter, 0, counter)
+                ws.write(ws_counter, 1, dataset[1] + ' ' + dataset[2])
+                ws.write(ws_counter, 2, dataset[2])
+                ws.write(ws_counter, 3, dataset[3])
+                ws.write(ws_counter, 4, dataset[4])
+                ws_counter += 1
 
         # Print progress
         if line.strip():
             counter += 1
-        # print('Wrote ' + str(counter) + ' lines of ' + str(line_count) + ' lines', end='\r')
+            # print('Wrote ' + str(counter) + ' lines of ' + str(line_count) + ' lines', end='\r')
 
     print('Wrote ' + str(counter) + ' lines')
-    resultset.close()
+
+    # Close the resultfiles
+    if str(resultset[0]).endswith('.csv'):
+        csv.close()
+
+    elif str(resultset[0]).endswith('.ods'):
+        wb.save('resultset.ods')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", help="the WhatsApp file containing the exported chat")
-    parser.add_argument("resultset", help="filename of the resultset", default="resultset.csv", nargs='*')
+    parser.add_argument("resultset", help="filename of the resultset, default resultset.csv. Use .csv to write a comma separated file. Use .ods to write to a LibreOffice spreadsheet file", default="resultset.csv", nargs='*')
     parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
     parser.add_argument("-d", "--debug", help="increase output verbosity to debug", action="store_true")
 
