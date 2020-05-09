@@ -100,7 +100,7 @@ def parse(line, verbose, debug):
             if (match.group(3) == '/' and match.group(8) == ': '):
                 date = datetime.datetime.strptime(match.group(1), "%d/%m/%y").date()
             # 12/21/19 Date Format
-            elif (match.group(3) == '/' and match.group(8) == '- '):
+            elif (match.group(3) == '/' and (match.group(8) == ' -' or match.group(8) == '- ')):
                 date = datetime.datetime.strptime(match.group(1), "%m/%d/%y").date()
             # 21.12.19 Date Format
             else:
@@ -131,7 +131,7 @@ def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
        print("Verbosity turned on")
 
     if debug:
-       print("Debug turned on")
+        print("Debug turned on")
 
     try:
         # Count the number of total lines
