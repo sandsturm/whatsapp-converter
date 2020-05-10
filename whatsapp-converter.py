@@ -24,15 +24,12 @@ class dateFormats:
     dateEN = r"""^((\d{1,2})\/(\d{1,2})\/(\d{1,2}))"""
     dateFormatEN = "%d/%m/%y"
     timeFormatEN = "%I:%M:%S %p"
-    # patternEN = dateEN + r"""\,\ \b((1[0-2]|0?[1-9])\:([0-5][0-9])\:([0-5][0-9])\ ([AaPp][Mm]))\:\ (.*)\:\ (.*)"""
-    patternEN = dateEN + r"""\,\ \b((1[0-9]|0?[1-9])\:([0-5][0-9])\:([0-5][0-9])\ ([AaPp][Mm]))\:[^:](.+?)\:\ (.*)"""
 
     # German
     dateStrDE = "DE"
     dateDE = r"""^((\d{1,2})\.(\d{1,2})\.(\d{1,2}))"""
     dateFormatDE = "%d.%m.%y"
     timeFormatDE = "%H:%M"
-    patternDE = dateDE + r"""\,\ \b((1[0-9]|0?[1-9])\:([0-5][0-9])()())\ \-\ (.*)\:\ (.*)"""
 
 class lastentry:
     lastlang = ""
@@ -45,7 +42,6 @@ def parse(line, verbose, debug):
     dateLANG = dateFormats.dateEN
     dateFormatLANG = dateFormats.dateFormatEN
     timeFormatLANG = dateFormats.timeFormatEN
-    pattern = dateFormats.patternEN
     pattern = "^((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,2}))\,\ (\d{1,2}:\d{1,2})(?::\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ ][^:])(.+?)\:\ (.*)"
     found = ""
     dataset = ['empty', '', '', '', '', '']
@@ -61,6 +57,7 @@ def parse(line, verbose, debug):
         timeFormatLANG = dateFormats.timeFormatEN
         # pattern = dateFormats.patternEN
         found = dateFormats.dateStrEN
+        print ("English")
 
     elif (re.match(re.compile(dateFormats.dateDE, re.VERBOSE), line)):
         # German
@@ -70,6 +67,7 @@ def parse(line, verbose, debug):
         timeFormatLANG = dateFormats.timeFormatDE
         # pattern = dateFormats.patternDE
         found = dateFormats.dateStrDE
+        print ("German")
 
     elif (re.match(re.compile(r"^[\t ]*\n", re.VERBOSE), line)):
         # Empty line
@@ -94,7 +92,6 @@ def parse(line, verbose, debug):
         # Make the match, assign to the groups
         match = re.match(re.compile(pattern, re.VERBOSE), line)
 
-        # TODO Wrong assignment of group 9 25/6/15, 1:42:12 AM: ‎Vishnu Gaud created this group
         if (match and match.group(9) != 'M'):
             # 21/12/19 Date Format
             if (match.group(3) == '/' and match.group(8) == ': '):
@@ -112,7 +109,6 @@ def parse(line, verbose, debug):
                 time = datetime.datetime.strptime(match.group(6), "%H:%M").time()
 
             # Buffer date, time, name for next line messages
-            lastentry.lastlang = dateStr
             lastentry.lastdate = date.strftime("%Y-%m-%d")
             lastentry.lasttime = time.strftime("%H:%M")
             lastentry.lastname = match.group(9)
