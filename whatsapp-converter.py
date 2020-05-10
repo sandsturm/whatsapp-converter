@@ -17,57 +17,23 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-class dateFormats:
-    # Define the time formats
-    # English
-    dateStrEN = "EN"
-    dateEN = r"""^((\d{1,2})\/(\d{1,2})\/(\d{1,2}))"""
-    dateFormatEN = "%d/%m/%y"
-    timeFormatEN = "%I:%M:%S %p"
-
-    # German
-    dateStrDE = "DE"
-    dateDE = r"""^((\d{1,2})\.(\d{1,2})\.(\d{1,2}))"""
-    dateFormatDE = "%d.%m.%y"
-    timeFormatDE = "%H:%M"
-
 class lastentry:
-    lastlang = ""
     lastdate = date.today()
     lasttime = date.today()
     lastname = ""
 
 def parse(line, verbose, debug):
     prefix = "***"
-    dateLANG = dateFormats.dateEN
-    dateFormatLANG = dateFormats.dateFormatEN
-    timeFormatLANG = dateFormats.timeFormatEN
+    patternDate = "^((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,2}))\,\ (\d{1,2}:\d{1,2})(?::\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ ][^:])(.+?)\:"
     pattern = "^((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,2}))\,\ (\d{1,2}:\d{1,2})(?::\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ ][^:])(.+?)\:\ (.*)"
-    found = ""
+    found = False
     dataset = ['empty', '', '', '', '', '']
     # if verbose: print(prefix + line)
     # if verbose: print(bcolors.FAIL + prefix + line)
     # Identify the date format in the chat line
 
-    if (re.match(re.compile(dateFormats.dateEN, re.VERBOSE), line)):
-        # English
-        dateStr = dateFormats.dateStrEN
-        dateLANG = dateFormats.dateEN
-        dateFormatLANG = dateFormats.dateFormatEN
-        timeFormatLANG = dateFormats.timeFormatEN
-        # pattern = dateFormats.patternEN
-        found = dateFormats.dateStrEN
-        print ("English")
-
-    elif (re.match(re.compile(dateFormats.dateDE, re.VERBOSE), line)):
-        # German
-        dateStr = dateFormats.dateStrDE
-        dateLANG = dateFormats.dateDE
-        dateFormatLANG = dateFormats.dateFormatDE
-        timeFormatLANG = dateFormats.timeFormatDE
-        # pattern = dateFormats.patternDE
-        found = dateFormats.dateStrDE
-        print ("German")
+    if (re.match(re.compile(patternDate, re.VERBOSE), line)):
+        found = True
 
     elif (re.match(re.compile(r"^[\t ]*\n", re.VERBOSE), line)):
         # Empty line
@@ -80,7 +46,7 @@ def parse(line, verbose, debug):
         # Create the dataset if commandline argument was to create a new line
         # TODO if (args.newline):
         if (1):
-            dataset = ['new', lastentry.lastdate, lastentry.lasttime, lastentry.lastname, newline.group(0)]
+            dataset = ['new', str(lastentry.lastdate), str(lastentry.lasttime), lastentry.lastname, newline.group(0)]
             # if (verbose | debug): print(dataset)
 
         else:
@@ -88,7 +54,7 @@ def parse(line, verbose, debug):
             dataset = ['append', '', '', '', newline.group(0)]
             if (verbose | debug): print(dataset)
 
-    if (len(found) > 0):
+    if (found):
         # Make the match, assign to the groups
         match = re.match(re.compile(pattern, re.VERBOSE), line)
 
@@ -119,7 +85,7 @@ def parse(line, verbose, debug):
 
     return dataset
 
-def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
+def convert(filename, resultset, verbose=False, debug=False):
     # Store the number of lines of the input file
     line_count = 0
 
@@ -149,21 +115,21 @@ def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
     # Count number of chatlines without empty lines
     counter = 0
 
-    if (debug): print ("Open export file " + resultset[0])
+    if (debug): print ('Open export file ' + resultset)
 
     # Define export file header
     header = ['Date and Time', 'Date', 'Time', 'Name', 'Message']
 
     # Select export formats
-    if str(resultset[0]).endswith('.csv'):
+    if str(resultset).endswith('.csv'):
 
         # Open result filename
-        csv = io.open (resultset[0], "w", encoding="utf-8")
+        csv = io.open (resultset, "w", encoding="utf-8")
 
         # Write headers
         csv.write(header[0] + '|' + header[1] + '|' + header[2] + '|' + header[3] + '|' + header[4] + '|' + '\n')
 
-    elif str(resultset[0]).endswith('.ods'):
+    elif str(resultset).endswith('.ods'):
         wb = xlwt.Workbook()
         ws = wb.add_sheet(filename)
 
@@ -183,11 +149,11 @@ def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
         if (dataset[0] != 'empty'):
 
             # Write to .csv file
-            if str(resultset[0]).endswith('.csv'):
+            if str(resultset).endswith('.csv'):
                 csv.write(dataset[1] + ' ' + dataset[2] + '|' + dataset[1] + '|' + dataset[2] + '|' + dataset[3] + '|' + dataset[4] + '\n')
 
             # Write to .ods file
-            elif str(resultset[0]).endswith('.ods'):
+            elif str(resultset).endswith('.ods'):
                 ws.write(ws_counter, 0, counter)
                 ws.write(ws_counter, 1, dataset[1] + ' ' + dataset[2])
                 ws.write(ws_counter, 2, dataset[2])
@@ -203,18 +169,18 @@ def convert(filename, resultset='resultset.csv', verbose=False, debug=False):
     print('Wrote ' + str(counter) + ' lines')
 
     # Close the resultfiles
-    if str(resultset[0]).endswith('.csv'):
+    if str(resultset).endswith('.csv'):
         csv.close()
 
-    elif str(resultset[0]).endswith('.ods'):
+    elif str(resultset).endswith('.ods'):
         wb.save('resultset.ods')
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("filename", help="the WhatsApp file containing the exported chat")
-    parser.add_argument("resultset", help="filename of the resultset, default resultset.csv. Use .csv to write a comma separated file. Use .ods to write to a LibreOffice spreadsheet file", default="resultset.csv", nargs='*')
-    parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
-    parser.add_argument("-d", "--debug", help="increase output verbosity to debug", action="store_true")
+    parser = argparse.ArgumentParser(prog='whatsapp-converter', epilog='For reporting bugs or requesting features, please visit https://github.com/sandsturm/whatsapp-converter/ and create an issue')
+    parser.add_argument('filename', metavar='filename', type=str, help='the WhatsApp file containing the exported chat')
+    parser.add_argument('resultset', default='resultset.csv', nargs='?', help='filename of the resultset, default resultset.csv. Use .csv to write a comma separated file. Use .ods to write to a LibreOffice spreadsheet file')
+    parser.add_argument('-v', '--verbose', help='increase output verbosity', action='store_true')
+    parser.add_argument('-d', '--debug', help='increase output verbosity to debug', action='store_true')
 
     # parser.add_argument("-nl", "--newline", help="message across various lines is counted as a new message", action="store_true")
     args = parser.parse_args()
