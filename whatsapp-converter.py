@@ -8,7 +8,7 @@ from datetime import date
 from tqdm import tqdm
 
 class constant:
-    version = 'v0.3.4'
+    version = 'v0.3.5'
 
 class bcolors:
     HEADER = '\033[95m'
