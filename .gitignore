@@ -105,6 +105,7 @@ venv.bak/
 .mypy_cache/
 
 # Whatsapp Example Data
+.~lock*
 *.txt
 *.csv
 *.ods
