@@ -16,7 +16,7 @@ import xlwt
 from tqdm import tqdm
 
 Constant = {
-    "VERSION": 'v0.3.6'
+    "VERSION": 'v0.3.7'
 }
 
 # TODO Add colors to output
