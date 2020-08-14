@@ -109,5 +109,8 @@ venv.bak/
 *.txt
 *.csv
 *.ods
+*.xls
+*.xlsx
 
 env-*/
+tests/
