@@ -113,4 +113,3 @@ venv.bak/
 *.xlsx
 
 env-*/
-tests/

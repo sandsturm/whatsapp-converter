@@ -23,7 +23,9 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         'tqdm',
-        'xlwt'
+        'pyexcel',
+        'pyexcel-xlsxw',
+        'pyexcel-ods3'
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -45,4 +47,6 @@ setuptools.setup(
             "whatsapp-converter=whatsapp_converter.__main__:main",
         ]
     },
+    test_suite='nose.collector',
+    tests_require=['nose'],
 )

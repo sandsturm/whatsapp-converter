@@ -1,3 +1,6 @@
+v0.4.0
+Optimized code and added an Excel xlsx export and corrected the LibreOffce export
+
 v0.3.8
 Fixed an issue in the Excel export, introduced classes
 
