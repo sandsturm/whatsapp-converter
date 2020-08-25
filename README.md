@@ -8,7 +8,7 @@ Use this application to convert your exported WhatsApp chat to a CSV or XLS file
 ## Dependencies
 Make sure you install the Python dependencies.
 ```shell
-pip install tqdm xlwt
+pip install tqdm pyexcel pyexcel-xlsxw pyexcel-ods3
 ```
 
 ## Usage
@@ -17,14 +17,29 @@ Use the following command on the command line to get an overview of the availabl
 python whatsapp-converter.py -h
 ```
 
+### Convert WhatsApp TXT to CSV (Default Use Case)
 The easy start is just to provide the filename of the exported WhatsApp chat. The application will process the chat and create a CSV file named *resultset.csv*.
 ```shell
 python whatsapp-converter.py whatsapp-export.txt
 ```
 
+### Convert WhatsApp to Excel XLS or XLSX
 If you want to export to an Excel spreadsheet file instead, make sure to add the filename at the end, e.g. *resultset.xls*.
 ```shell
 python whatsapp-converter.py whatsapp-export.txt resultset.xls
+```
+
+or
+
+```shell
+python whatsapp-converter.py whatsapp-export.txt resultset.xlsx
+```
+
+### Convert WhatsApp to LibreOffice ODS
+If you want to export to a LibreOffice spreadsheet file, make sure to add the filename at the end, e.g. *resultset.ods*.
+Please note that the export takes some time. The script did not crash.
+```shell
+python whatsapp-converter.py whatsapp-export.txt resultset.ods
 ```
 
 Here is the list of all available options:
