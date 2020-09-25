@@ -1,12 +1,12 @@
 # whatsapp-converter
 
 ## Introduction
-Use this application to convert your exported WhatsApp chat to a CSV or XLS file.
+Use the whatsapp-converter to convert your exported WhatsApp chat to a CSV, an XLS, XLSX file, or an ODS file.
 1. The conversion is done locally. No data is shared with the internet!
-2. The resultset is a CSV file which you can import into your favorite calculation application such as Excel or LibreOffice. You can also directly export to an Excel spreadsheet file.
+2. The resultset is a CSV file which you can import into your favorite calculation application such as Excel or LibreOffice. You can also directly export to a spreadsheet file and do create a pivot table.
 
 ## Dependencies
-Make sure you install the Python dependencies.
+If you want to install the dependencies manually, use pip.
 ```shell
 pip install tqdm pyexcel pyexcel-xlsxw pyexcel-ods3
 ```

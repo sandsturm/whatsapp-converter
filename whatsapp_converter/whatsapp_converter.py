@@ -48,7 +48,7 @@ def parse(line, local_args):
     line = Single line to parse
     args = Arguments from the command line. In this case only verbose and debug switches.
     '''
-    # patterndate = "^((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,2}))\,\ (\d{1,2}:\d{1,2})(?::\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ ][^:])(.+?)\:"
+
     pattern = "^((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,2}))\,\ (\d{1,2}:\d{1,2})(?::\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ ][^:])(.+?)\:\ (.*)"
 
     dataset = ['empty', '', '', '', '', '']
