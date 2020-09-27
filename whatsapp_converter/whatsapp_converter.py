@@ -49,7 +49,7 @@ def parse(line, local_args):
     args = Arguments from the command line. In this case only verbose and debug switches.
     '''
 
-    pattern = "^((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,2}))\,\ (\d{1,2}:\d{1,2})(?::\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ ][^:])(.+?)\:\ (.*)"
+    pattern = "^\[?((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,4}))\,\ (\d{1,2}[:|.]\d{1,2})(?:[:|.]\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ |\]\ ][^:])(.+?)\:\ (.*)"
 
     dataset = ['empty', '', '', '', '', '']
     # if verbose: print(prefix + line)
@@ -66,15 +66,22 @@ def parse(line, local_args):
                 date = datetime.datetime.strptime(match.group(1), "%d/%m/%y").date()
             # 12/21/19 Date Format
             elif match.group(3) == '/' and (match.group(8) == ' -' or match.group(8) == '- '):
+                print(match.group(1))
                 date = datetime.datetime.strptime(match.group(1), "%m/%d/%y").date()
+            # 12/21/2019 Date Format
+            elif match.group(3) == '/' and match.group(8) == '] ':
+                print(match.group(1))
+                date = datetime.datetime.strptime(match.group(1), "%m/%d/%Y").date()
             # 21.12.19 Date Format
             else:
                 date = datetime.datetime.strptime(match.group(1), "%d.%m.%y").date()
 
             if match.group(7):
                 time = datetime.datetime.strptime(match.group(6) + " " + match.group(7), "%I:%M %p").time()
-            else:
+            elif match.group(6).find(":") > 0:
                 time = datetime.datetime.strptime(match.group(6), "%H:%M").time()
+            elif match.group(6).find(".") > 0:
+                time = datetime.datetime.strptime(match.group(6), "%H.%M").time()
 
             # Buffer date, time, name for next line messages
             lastentry["lastdate"] = date.strftime("%Y-%m-%d")

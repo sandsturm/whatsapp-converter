@@ -1,3 +1,6 @@
+v0.4.1
+Added support for date and time in square brackets. Solved parts of issue #4.
+
 v0.4.0
 Optimized code and added an Excel xlsx export and corrected the LibreOffce export
 
