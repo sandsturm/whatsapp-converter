@@ -49,7 +49,8 @@ def parse(line, local_args):
     args = Arguments from the command line. In this case only verbose and debug switches.
     '''
 
-    pattern = "^\[?((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,4}))\,\ (\d{1,2}[:|.]\d{1,2})(?:[:|.]\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ |\]\ ][^:])(.+?)\:\ (.*)"
+    pattern_date = "^\[?((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,4}))\,?\ (\d{1,2}[:|.]\d{1,2})(?:[:|.]\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ |\]\ ][^:])"
+    pattern = pattern_date + "(.+?)\:\ (.*)"
 
     dataset = ['empty', '', '', '', '', '']
     # if verbose: print(prefix + line)
@@ -66,15 +67,16 @@ def parse(line, local_args):
                 date = datetime.datetime.strptime(match.group(1), "%d/%m/%y").date()
             # 12/21/19 Date Format
             elif match.group(3) == '/' and (match.group(8) == ' -' or match.group(8) == '- '):
-                print(match.group(1))
                 date = datetime.datetime.strptime(match.group(1), "%m/%d/%y").date()
-            # 12/21/2019 Date Format
+            # 12/21/2019 Date Format with square brackets
             elif match.group(3) == '/' and match.group(8) == '] ':
-                print(match.group(1))
                 date = datetime.datetime.strptime(match.group(1), "%m/%d/%Y").date()
             # 21.12.19 Date Format
             else:
-                date = datetime.datetime.strptime(match.group(1), "%d.%m.%y").date()
+                if len(match.group(5)) == 4:
+                    date = datetime.datetime.strptime(match.group(1), "%d.%m.%Y").date()
+                else:
+                    date = datetime.datetime.strptime(match.group(1), "%d.%m.%y").date()
 
             if match.group(7):
                 time = datetime.datetime.strptime(match.group(6) + " " + match.group(7), "%I:%M %p").time()
@@ -99,7 +101,8 @@ def parse(line, local_args):
         if local_args.debug:
             print("Empty line removed")
 
-    else:
+    # Check if there is
+    elif not re.match(re.compile(r"^\[?((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,4}))\,?\ (\d{1,2}[:|.]\d{1,2})(?:[:|.]\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ |\]\ ][^:])", re.VERBOSE), line):
         if local_args.debug:
             print("Appending line found")
 
