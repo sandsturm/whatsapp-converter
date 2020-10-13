@@ -68,9 +68,9 @@ def parse(line, local_args):
             # 12/21/19 Date Format
             elif match.group(3) == '/' and (match.group(8) == ' -' or match.group(8) == '- '):
                 date = datetime.datetime.strptime(match.group(1), "%m/%d/%y").date()
-            # 12/21/2019 Date Format with square brackets
+            # 21/12/2019 Date Format with square brackets
             elif match.group(3) == '/' and match.group(8) == '] ':
-                date = datetime.datetime.strptime(match.group(1), "%m/%d/%Y").date()
+                date = datetime.datetime.strptime(match.group(1), "%d/%m/%Y").date()
             # 21.12.19 Date Format
             else:
                 if len(match.group(5)) == 4:

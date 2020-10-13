@@ -1,3 +1,9 @@
+v0.4.3
+Correct bug with square brackets and month/day/year. Solved parts of issue #4.
+
+v0.4.2
+Added support for another date and time format in square brackets. Solved parts of issue #4.
+
 v0.4.1
 Added support for date and time in square brackets. Solved parts of issue #4.
 
