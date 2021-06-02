@@ -15,6 +15,7 @@ from datetime import date
 import pyexcel
 from tqdm import tqdm
 
+#---------------------------------------------
 # Add colors to output
 bcolors = {
     "HEADER": "\033[95m",
@@ -33,6 +34,7 @@ lastentry = {
     "lastname": ""
 }
 
+#---------------------------------------------
 # Define export file header
 header = [
     "Date and Time",
@@ -49,28 +51,48 @@ def parse(line, local_args):
     args = Arguments from the command line. In this case only verbose and debug switches.
     '''
 
-    pattern_date = "^\[?((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,4}))\,?\ (\d{1,2}[:|.]\d{1,2})(?:[:|.]\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ |\]\ ][^:])"
-    pattern = pattern_date + "(.+?)\:\ (.*)"
+    #---------------------------------------------
+    # The main regex logic to identify the date and message
+    pattern_date = '^\[?((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,4}))\,?\ (\d{1,2}[:|.]\d{1,2})([:|.]\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ |\]\ ][^:])'
+    pattern = pattern_date + '(.+?)\:\ (.*)'
 
     dataset = ['empty', '', '', '', '', '']
+
+    #---------------------------------------------
     # if verbose: print(prefix + line)
     # if verbose: print(BColors.FAIL + prefix + line)
     # Identify the date format in the chat line
 
     if re.match(re.compile(pattern, re.VERBOSE), line):
+
+        #---------------------------------------------
         # Make the match, assign to the groups
         match = re.match(re.compile(pattern, re.VERBOSE), line)
 
-        if match and match.group(9) != 'M':
+        if match and match.group(10) != 'M':
+
+            #---------------------------------------------
             # 21/12/19 Date Format
-            if match.group(3) == '/' and match.group(8) == ': ':
-                date = datetime.datetime.strptime(match.group(1), "%d/%m/%y").date()
+            if match.group(3) == '/' and match.group(9) == ': ':
+                if len(match.group(5)) == 4:
+                    date = datetime.datetime.strptime(match.group(1), "%d/%m/%Y").date()
+                else:
+                    date = datetime.datetime.strptime(match.group(1), "%d/%m/%y").date()
+
+            #---------------------------------------------
             # 12/21/19 Date Format
-            elif match.group(3) == '/' and (match.group(8) == ' -' or match.group(8) == '- '):
-                date = datetime.datetime.strptime(match.group(1), "%m/%d/%y").date()
+            elif match.group(3) == '/' and (match.group(9) == ' -' or match.group(9) == '- '):
+                if len(match.group(5)) == 4 and match.group(7) == None:
+                    date = datetime.datetime.strptime(match.group(1), "%d/%m/%Y").date()
+                else:
+                    date = datetime.datetime.strptime(match.group(1), "%m/%d/%y").date()
+
+            #---------------------------------------------
             # 12/21/2019 Date Format with square brackets
-            elif match.group(3) == '/' and match.group(8) == '] ':
+            elif match.group(3) == '/' and match.group(9) == '] ':
                 date = datetime.datetime.strptime(match.group(1), "%m/%d/%Y").date()
+
+            #---------------------------------------------
             # 21.12.19 Date Format
             else:
                 if len(match.group(5)) == 4:
@@ -78,29 +100,34 @@ def parse(line, local_args):
                 else:
                     date = datetime.datetime.strptime(match.group(1), "%d.%m.%y").date()
 
-            if match.group(7):
-                time = datetime.datetime.strptime(match.group(6) + " " + match.group(7), "%I:%M %p").time()
+            if match.group(8):
+                time = datetime.datetime.strptime(match.group(6) + " " + match.group(8), "%I:%M %p").time()
             elif match.group(6).find(":") > 0:
                 time = datetime.datetime.strptime(match.group(6), "%H:%M").time()
             elif match.group(6).find(".") > 0:
                 time = datetime.datetime.strptime(match.group(6), "%H.%M").time()
 
+            #---------------------------------------------
             # Buffer date, time, name for next line messages
             lastentry["lastdate"] = date.strftime("%Y-%m-%d")
             lastentry["lasttime"] = time.strftime("%H:%M")
-            lastentry["lastname"] = match.group(9)
+            lastentry["lastname"] = match.group(10)
 
+            #---------------------------------------------
             # Create the dataset for the new message
-            dataset = ['new', date.strftime("%Y-%m-%d") + " " + time.strftime("%H:%M"), date.strftime("%Y-%m-%d"), time.strftime("%H:%M"), str(match.group(9)), match.group(10)]
+            dataset = ['new', date.strftime("%Y-%m-%d") + " " + time.strftime("%H:%M"), date.strftime("%Y-%m-%d"), time.strftime("%H:%M"), str(match.group(10)), match.group(11)]
 
             if local_args.verbose | local_args.debug:
                 print(dataset)
 
     elif re.match(re.compile(r"^[\t ]*\n", re.VERBOSE), line):
+
+        #---------------------------------------------
         # Empty line
         if local_args.debug:
             print("Empty line removed")
 
+    #---------------------------------------------
     # Check if there is
     elif not re.match(re.compile(r"^\[?((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,4}))\,?\ (\d{1,2}[:|.]\d{1,2})(?:[:|.]\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ |\]\ ][^:])", re.VERBOSE), line):
         if local_args.debug:
@@ -108,19 +135,10 @@ def parse(line, local_args):
 
         newline = (re.match(re.compile(r"^(.*)", re.VERBOSE), line))
 
+        #---------------------------------------------
         # Create the dataset if commandline argument was to create a new line
         # TODO if (local_args.newline):
-        # if 1:
-        #     dataset = ['new', str(lastentry["lastdate"]), str(lastentry["lasttime"]), lastentry["lastname"], newline.group(0)]
         dataset = ['new', str(lastentry["lastdate"]) + " " + str(lastentry["lasttime"]), str(lastentry["lastdate"]), str(lastentry["lasttime"]), lastentry["lastname"], newline.group(0)]
-        #     # if local_args.verbose | local_args.debug:
-        #           print(dataset)
-        #
-        # else:
-        #     # Otherwise make sure it is appended to the existing line
-        #     dataset = ['append', '', '', '', newline.group(0)]
-        #     if local_args.verbose | local_args.debug:
-        #          print(dataset)
 
     return dataset
 
@@ -132,6 +150,7 @@ def convert(local_args):
     3. Close the file
 
     '''
+    #---------------------------------------------
     # Store the number of lines of the input file
     line_count = 0
 
@@ -148,9 +167,11 @@ def convert(local_args):
             content = []
 
             for line in file:
+                #---------------------------------------------
                 # Explicetly opened the file two times to show progress in user interface
                 line_count += 1
 
+                #---------------------------------------------
                 # Read lines into a list
                 content.append(line)
 
@@ -161,7 +182,9 @@ def convert(local_args):
 
     print("Converting data now")
 
-    # Count number of chatlines without  linesError: Excel 2003 only supports a maximum of 65535 lines. Whatsapp-converter found more than 65535 lines for input which might lead to an error.\n
+    #---------------------------------------------
+    # Count number of chatlines without  linesError: Excel 2003 only supports a maximum of 65535 lines.
+    # Whatsapp-converter found more than 65535 lines for input which might lead to an error.\n
     counter = 0
 
     if local_args.debug:
@@ -170,6 +193,7 @@ def convert(local_args):
     dataset = []
     dataset.append(header)
 
+    #---------------------------------------------
     # Select export formats
     if str(local_args.resultset).endswith('.xls'):
         if line_count > 65535:
@@ -177,6 +201,7 @@ def convert(local_args):
             print("")
             sys.exit()
 
+    #---------------------------------------------
     # TODO Append line with buffer before writing
     # Show progress via tqdm
     for line in tqdm(content, total=line_count, ncols=120):
@@ -186,15 +211,18 @@ def convert(local_args):
         buffer = parse(line, local_args)
 
         if buffer[0] != 'empty':
+            #---------------------------------------------
             # Write to file
             dataset.append(buffer[1:])
 
+        #---------------------------------------------
         # Print progress
         if line.strip():
             counter += 1
 
     print('Writing to ' + str(local_args.resultset))
 
+    #---------------------------------------------
     # Select export formats
     if str(local_args.resultset).endswith('.csv'):
         pyexcel.save_as(array=dataset, dest_file_name=str(local_args.resultset), dest_delimiter='|')
@@ -211,5 +239,6 @@ def convert(local_args):
 
     print('Wrote ' + str(counter) + ' lines')
 
+    #---------------------------------------------
     # Close the resultset object
     resultset = None

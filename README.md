@@ -8,7 +8,7 @@ Use the whatsapp-converter to convert your exported WhatsApp chat to a CSV, an X
 ## Dependencies
 If you want to install the dependencies manually, use pip.
 ```shell
-pip install tqdm pyexcel pyexcel-xlsxw pyexcel-ods3
+pip install tqdm pyexcel pyexcel-xlsxw pyexcel-ods3 xlwt
 ```
 
 ## Usage

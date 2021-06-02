@@ -1,3 +1,6 @@
+v0.4.4
+Added support for dd/mm/yyyy, 23:59 - name: message format. Solved issue #5.
+
 v0.4.1
 Added support for date and time in square brackets. Solved parts of issue #4.
 
