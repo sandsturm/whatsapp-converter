@@ -1,4 +1,4 @@
-v0.4.3
+v0.4.4
 Added support for dd/mm/yyyy, 23:59 - name: message format. Solved issue #5.
 
 v0.4.3
