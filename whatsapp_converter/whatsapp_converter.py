@@ -8,25 +8,14 @@ Use this application to convert your exported WhatsApp chat to a CSV or Excel fi
 '''
 
 import io
-import re
 import sys
+import re
 import datetime
 from datetime import date
 import pyexcel
 from tqdm import tqdm
 
-#---------------------------------------------
-# Add colors to output
-bcolors = {
-    "HEADER": "\033[95m",
-    "OKBLUE": "\033[94m",
-    "OKGREEN": "\033[92m",
-    "WARNING": "\033[93m",
-    "FAIL": "\033[91m",
-    "ENDC": "\033[0m",
-    "BOLD": "\033[1m",
-    "UNDERLINE": "\033[4m"
-}
+from whatsapp_converter import colors
 
 lastentry = {
     "lastdate": date.today(),
@@ -60,7 +49,7 @@ def parse(line, local_args):
 
     #---------------------------------------------
     # if verbose: print(prefix + line)
-    # if verbose: print(BColors.FAIL + prefix + line)
+    # if verbose: print(BCOLORS.FAIL + prefix + line)
     # Identify the date format in the chat line
 
     if re.match(re.compile(pattern, re.VERBOSE), line):
@@ -197,7 +186,7 @@ def convert(local_args):
     # Select export formats
     if str(local_args.resultset).endswith('.xls'):
         if line_count > 65535:
-            print(f'\n{bcolors["FAIL"]}Error: Excel 2003 only supports a maximum of 65535 lines. Whatsapp-converter found more than 65535 lines for input which might lead to an error.{bcolors["ENDC"]}\n')
+            print(f'\n{BCOLORS["FAIL"]}Error: Excel 2003 only supports a maximum of 65535 lines. Whatsapp-converter found more than 65535 lines for input which might lead to an error.{BCOLORS["ENDC"]}\n')
             print("")
             sys.exit()
 
@@ -234,7 +223,7 @@ def convert(local_args):
         pyexcel.save_as(array=dataset, dest_file_name=str(local_args.resultset))
 
     elif str(local_args.resultset).endswith('.ods'):
-        print(f'{bcolors["WARNING"]}NOTE: The writing of the ODS file takes some time. Your terminal did not crash. Please wait ...{bcolors["ENDC"]}')
+        print(f'{BCOLORS["WARNING"]}NOTE: The writing of the ODS file takes some time. Your terminal did not crash. Please wait ...{BCOLORS["ENDC"]}')
         pyexcel.save_as(array=dataset, dest_file_name=str(local_args.resultset))
 
     print('Wrote ' + str(counter) + ' lines')

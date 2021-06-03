@@ -4,8 +4,11 @@
 # import sys
 
 import os
+import sys
 import argparse
 from typing import Dict
+
+from whatsapp_converter import colors
 from whatsapp_converter import whatsapp_converter
 
 # the path to the directory this file is in
@@ -15,6 +18,8 @@ VERSION: Dict[str, str] = {}
 with open(_MODULE_PATH + "/version.py", "r") as version_file:
     exec(version_file.read(), VERSION)
 
+#---------------------------------------------
+# Supported filetypes for the resultset
 SUPPORTED = (
     ".csv",
     ".xls",
@@ -34,11 +39,11 @@ def main():
     args = parser.parse_args()
 
     if not str(args.filename):
-        print(f'{bcolors["FAIL"]}ERROR: whatsapp-converter needs at least an import file.{bcolors["ENDC"]}')
+        print(f'{colors.BCOLORS["FAIL"]}ERROR: whatsapp-converter needs at least an import file.{colors.BCOLORS["ENDC"]}')
         sys.exit()
 
     if not str(args.resultset).endswith(SUPPORTED):
-        print(f'{bcolors["FAIL"]}ERROR: whatsapp-converter only supports the following fileformats:{bcolors["ENDC"]}')
+        print(f'{colors.BCOLORS["FAIL"]}ERROR: whatsapp-converter only supports the following fileformats:{colors.BCOLORS["ENDC"]}')
         # TODO iterate over tuple
         print(SUPPORTED)
         sys.exit()

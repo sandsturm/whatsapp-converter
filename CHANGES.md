@@ -1,3 +1,6 @@
+v0.4.5
+Moved color definition into separate file
+
 v0.4.4
 Added support for dd/mm/yyyy, 23:59 - name: message format. Solved issue #5.
 

@@ -37,7 +37,7 @@ setuptools.setup(
         "Topic :: Text Processing",
     ],
     python_requires='>=3',
-    keywords='whatsapp text converter conversion',
+    keywords='whatsapp text converter conversion analysis',
     project_urls={  # Optional
         "Source": "https://github.com/sandsturm/whatsapp-converter/",
         "Bug Reports": "https://github.com/sandsturm/whatsapp-converter/issues",
