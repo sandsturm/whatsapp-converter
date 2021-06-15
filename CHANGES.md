@@ -1,3 +1,6 @@
+v0.5.0
+Added multiline support. Merge it or export it as a new line.
+
 v0.4.5
 Moved color definition into separate file
 

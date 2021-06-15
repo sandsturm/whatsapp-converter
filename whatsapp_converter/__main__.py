@@ -31,6 +31,7 @@ def main():
     parser = argparse.ArgumentParser(prog='whatsapp-converter', description='Use whatsapp-converter to convert your exported WhatsApp chat to a CSV, ODS (LibreOffice) or XLS (Excel) file.', epilog='For reporting bugs or requesting features, please visit https://github.com/sandsturm/whatsapp-converter/ and create an issue')
     parser.add_argument('filename', metavar='filename', type=str, help='the WhatsApp file containing the exported chat')
     parser.add_argument('resultset', default='resultset.csv', nargs='?', help='filename of the resultset, default resultset.csv. Use .csv to write a comma separated file. Use .xls or .xlsx to write to an Excel spreadsheet file. Use .ods to write to a LibreOffice file.')
+    parser.add_argument('-n', '--newline', help='create a new line (same date and time) in the resultset for every multline chat message', action='store_true')
     parser.add_argument('-v', '--verbose', help='increase output verbosity', action='store_true')
     parser.add_argument('-d', '--debug', help='increase output verbosity to debug', action='store_true')
     parser.add_argument('--version', action='version', version="v" + VERSION["VERSION"])

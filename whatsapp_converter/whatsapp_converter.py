@@ -119,6 +119,7 @@ def parse(line, local_args):
     #---------------------------------------------
     # Check if there is
     elif not re.match(re.compile(r"^\[?((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,4}))\,?\ (\d{1,2}[:|.]\d{1,2})(?:[:|.]\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ |\]\ ][^:])", re.VERBOSE), line):
+
         if local_args.debug:
             print("Appending line found")
 
@@ -127,7 +128,7 @@ def parse(line, local_args):
         #---------------------------------------------
         # Create the dataset if commandline argument was to create a new line
         # TODO if (local_args.newline):
-        dataset = ['new', str(lastentry["lastdate"]) + " " + str(lastentry["lasttime"]), str(lastentry["lastdate"]), str(lastentry["lasttime"]), lastentry["lastname"], newline.group(0)]
+        dataset = ['append', str(lastentry["lastdate"]) + " " + str(lastentry["lasttime"]), str(lastentry["lastdate"]), str(lastentry["lasttime"]), lastentry["lastname"], newline.group(0)]
 
     return dataset
 
@@ -200,9 +201,14 @@ def convert(local_args):
         buffer = parse(line, local_args)
 
         if buffer[0] != 'empty':
+
             #---------------------------------------------
-            # Write to file
-            dataset.append(buffer[1:])
+            # Write to dataset
+            if buffer[0] == 'new' or ( local_args.newline and buffer[0] == 'append' ):
+                dataset.append(buffer[1:])
+            # Default multiline appended to previous converted message
+            else:
+                dataset[-1][-1] = dataset[-1][-1] + " " + buffer[-1]
 
         #---------------------------------------------
         # Print progress

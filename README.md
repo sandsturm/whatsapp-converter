@@ -56,9 +56,24 @@ resultset       Filename of the resultset, default resultset.csv. Use .csv to wr
 #### Optional Arguments
 ```shell
   -h, --help      show this help message and exit
+  -n  --newline   create a new line (same date and time) in the resultset for every multiline chat message
   -v, --verbose   increase output verbosity
   -d, --debug     increase output verbosity to debug
 ```
+
+##### Example Newline Argument
+
+Consider this chat exported chat message
+```18.05.19, 11:50:00: Alan Smith: Hier geht es los
+Das ist eine neue Zeile
+```
+
+By default the resultset will merge the two lines.
+2019-05-18 11:50|2019-05-18|11:50|Alan Smith|It starts here This is a new line
+
+If you start the application with the -n argument, a new line will be added and the date and time of the multiline message taken.
+2019-05-18 11:50|2019-05-18|11:50|Alan Smith|It starts here
+2019-05-18 11:50|2019-05-18|11:50|Alan Smith|This is a new line
 
 ## Conversion from to
 
@@ -69,9 +84,9 @@ Each line of the dataset will be converted to structured data which can be impor
 30.11.18, 10:57 - Nachrichten in diesem Chat sowie Anrufe sind jetzt mit Ende-zu-Ende-Verschlüsselung geschützt. Tippe für mehr Infos.
 30.11.18, 10:57 - Snoopy: Hallo :)
 30.11.18, 10:58 - Snoopy: Jetzt bin ich gespannt auf deine Antwort ;)
-1/26/19, 00:07 - Jon Doe: Schlaf gut
-18.05.19, 11:50:00: Alan Smith: Hier geht es los
-Das ist eine neue Zeile
+1/26/19, 00:07 - Jon Doe: Sleep well
+18.05.19, 11:50:00: Alan Smith: It starts here
+This is a new line
 ```
 
 The resultset file looks like this. In the default configuration new lines get the same date and time stamp and sender name as the previous line:
@@ -81,7 +96,6 @@ Date and Time|Date|Time|Name|Message
 2016-12-21 23:29|2016-12-21|23:29|Alan Smith|Like a Rolex
 2018-11-30 10:57|2018-11-30|10:57|Snoopy|Hallo :)
 2018-11-30 10:58|2018-11-30|10:58|Snoopy|Jetzt bin ich gespannt auf deine Antwort ;)
-2019-01-26 00:07|2019-01-26|00:07|Jon Doe|Schlaf gut
-2019-05-18 11:50|2019-05-18|11:50|Alan Smith|Hier geht es los
-2019-05-18 11:50|2019-05-18|11:50|Alan Smith|Das ist eine neue Zeile
+2019-01-26 00:07|2019-01-26|00:07|Jon Doe|Sleep well
+2019-05-18 11:50|2019-05-18|11:50|Alan Smith|It starts here This is a new line
 ```
