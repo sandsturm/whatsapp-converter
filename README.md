@@ -64,16 +64,21 @@ resultset       Filename of the resultset, default resultset.csv. Use .csv to wr
 ##### Example Newline Argument
 
 Consider this chat exported chat message
-```18.05.19, 11:50:00: Alan Smith: Hier geht es los
-Das ist eine neue Zeile
+```shell
+18.05.19, 11:50:00: Alan Smith: It starts here
+This is a new line
 ```
 
 By default the resultset will merge the two lines.
+```shell
 2019-05-18 11:50|2019-05-18|11:50|Alan Smith|It starts here This is a new line
+```
 
 If you start the application with the -n argument, a new line will be added and the date and time of the multiline message taken.
+```shell
 2019-05-18 11:50|2019-05-18|11:50|Alan Smith|It starts here
 2019-05-18 11:50|2019-05-18|11:50|Alan Smith|This is a new line
+```
 
 ## Conversion from to
 
