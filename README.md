@@ -47,6 +47,8 @@ Here is the list of all available options:
 whatsapp-converter.py [-h] [-v] [-d] filename [resultset.csv|resultset.xls]
 ```
 
+## Commandline Arguments
+
 #### Mandatory Arguments
 ```shell
 filename        The WhatsApp file containing the exported chat
