@@ -1,3 +1,6 @@
+v0.5.1
+Corrected a small bug with color codes in shell output on Mac OS.
+
 v0.5.0
 Added multiline support. Merge it or export it as a new line.
 

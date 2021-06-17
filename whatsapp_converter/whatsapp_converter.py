@@ -10,6 +10,7 @@ Use this application to convert your exported WhatsApp chat to a CSV or Excel fi
 import io
 import sys
 import re
+import platform
 import datetime
 from datetime import date
 import pyexcel
@@ -187,7 +188,10 @@ def convert(local_args):
     # Select export formats
     if str(local_args.resultset).endswith('.xls'):
         if line_count > 65535:
-            print(f'\n{BCOLORS["FAIL"]}Error: Excel 2003 only supports a maximum of 65535 lines. Whatsapp-converter found more than 65535 lines for input which might lead to an error.{BCOLORS["ENDC"]}\n')
+            if( platform.system() == "Linux" ):
+                print(f'\n{BCOLORS["FAIL"]}Error: Excel 2003 only supports a maximum of 65535 lines. Whatsapp-converter found more than 65535 lines for input which might lead to an error.{BCOLORS["ENDC"]}\n')
+            else:
+                print("Error: Excel 2003 only supports a maximum of 65535 lines. Whatsapp-converter found more than 65535 lines for input which might lead to an error.")
             print("")
             sys.exit()
 
@@ -229,7 +233,10 @@ def convert(local_args):
         pyexcel.save_as(array=dataset, dest_file_name=str(local_args.resultset))
 
     elif str(local_args.resultset).endswith('.ods'):
-        print(f'{BCOLORS["WARNING"]}NOTE: The writing of the ODS file takes some time. Your terminal did not crash. Please wait ...{BCOLORS["ENDC"]}')
+        if( platform.system() == "Linux" ):
+            print(f'{BCOLORS["WARNING"]}NOTE: The writing of the ODS file takes some time. Your terminal did not crash. Please wait ...{BCOLORS["ENDC"]}')
+        else:
+            print("NOTE: The writing of the ODS file takes some time. Your terminal did not crash. Please wait ...")
         pyexcel.save_as(array=dataset, dest_file_name=str(local_args.resultset))
 
     print('Wrote ' + str(counter) + ' lines')

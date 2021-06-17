@@ -6,6 +6,7 @@
 import os
 import sys
 import argparse
+import platform
 from typing import Dict
 
 from whatsapp_converter import colors
@@ -39,12 +40,19 @@ def main():
     # parser.add_argument("-nl", "--newline", help="message across various lines is counted as a new message", action="store_true")
     args = parser.parse_args()
 
-    if not str(args.filename):
-        print(f'{colors.BCOLORS["FAIL"]}ERROR: whatsapp-converter needs at least an import file.{colors.BCOLORS["ENDC"]}')
+    if not str( args.filename ):
+        if( platform.system() == "Linux" ):
+            print(f'{colors.BCOLORS["FAIL"]}ERROR: whatsapp-converter needs at least an import file.{colors.BCOLORS["ENDC"]}')
+        else:
+            print("ERROR: whatsapp-converter needs at least an import file.")
         sys.exit()
 
-    if not str(args.resultset).endswith(SUPPORTED):
-        print(f'{colors.BCOLORS["FAIL"]}ERROR: whatsapp-converter only supports the following fileformats:{colors.BCOLORS["ENDC"]}')
+    if not str( args.resultset ).endswith( SUPPORTED ):
+        if( platform.system() == "Linux" ):
+            print(f'{colors.BCOLORS["FAIL"]}ERROR: whatsapp-converter only supports the following fileformats:{colors.BCOLORS["ENDC"]}')
+        else:
+            print("ERROR: whatsapp-converter only supports the following fileformats:")
+
         # TODO iterate over tuple
         print(SUPPORTED)
         sys.exit()
