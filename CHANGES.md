@@ -1,3 +1,6 @@
+v0.5.3
+Added 21/12/2019 Date Format with square brackets and am
+
 v0.5.2
 Corrected a small bug which prevented the colors.py to be loaded in main
 

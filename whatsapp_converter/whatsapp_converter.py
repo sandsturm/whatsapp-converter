@@ -33,6 +33,7 @@ header = [
     "Message"
 ]
 
+
 def parse(line, local_args):
     '''Parse each line
 
@@ -58,7 +59,7 @@ def parse(line, local_args):
         # Make the match, assign to the groups
         match = re.match(re.compile(pattern, re.VERBOSE), line)
 
-        if match and match.group(10) != 'M':
+        if match and match.group(10) !=  'M':
 
             # ---------------------------------------------
             # 21/12/19 Date Format
@@ -71,10 +72,15 @@ def parse(line, local_args):
             # ---------------------------------------------
             # 12/21/19 Date Format
             elif match.group(3) == '/' and (match.group(9) == ' -' or match.group(9) == '- '):
-                if len(match.group(5)) == 4 and match.group(7) == None:
+                if len(match.group(5)) == 4 and match.group(7) is None:
                     date = datetime.datetime.strptime(match.group(1), "%d/%m/%Y").date()
                 else:
                     date = datetime.datetime.strptime(match.group(1), "%m/%d/%y").date()
+
+            # ---------------------------------------------
+            # 21/12/2019 Date Format with square brackets and am
+            elif match.group(3) == '/' and match.group(9) == '] ' and (match.group(8) == 'am' or match.group(8) == 'pm'):
+                date = datetime.datetime.strptime(match.group(1), "%d/%m/%Y").date()
 
             # ---------------------------------------------
             # 12/21/2019 Date Format with square brackets
@@ -132,6 +138,7 @@ def parse(line, local_args):
 
     return dataset
 
+
 def convert(local_args):
     '''Convert the input file
 
@@ -169,7 +176,6 @@ def convert(local_args):
         print("File \"" + local_args.filename + "\" cannot be found.")
         sys.exit()
 
-
     print("Converting data now")
 
     # ---------------------------------------------
@@ -204,7 +210,7 @@ def convert(local_args):
 
             # ---------------------------------------------
             # Write to dataset
-            if buffer[0] == 'new' or ( local_args.newline and buffer[0] == 'append' ):
+            if buffer[0] == 'new' or (local_args.newline and buffer[0] == 'append'):
                 dataset.append(buffer[1:])
             # Default multiline appended to previous converted message
             else:
@@ -233,7 +239,3 @@ def convert(local_args):
         pyexcel.save_as(array=dataset, dest_file_name=str(local_args.resultset))
 
     print('Wrote ' + str(counter) + ' lines')
-
-    # ---------------------------------------------
-    # Close the resultset object
-    resultset = None

@@ -36,7 +36,7 @@ def main():
     parser.add_argument('-d', '--debug', help='increase output verbosity to debug', action='store_true')
     parser.add_argument('--version', action='version', version="v" + VERSION["VERSION"])
 
-    # parser.add_argument("-nl", "--newline", help="message across various lines is counted as a new message", action="store_true")
+    # parser.add_argument("-nl", "--newline", help = "message across various lines is counted as a new message", action = "store_true")
     args = parser.parse_args()
 
     if not str(args.filename):
@@ -50,6 +50,7 @@ def main():
         sys.exit()
 
     whatsapp_converter.convert(args)
+
 
 if __name__ == "__main__":
     main()
