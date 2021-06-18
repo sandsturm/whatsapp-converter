@@ -3,15 +3,15 @@ from typing import Dict
 
 # version.py defines the VERSION and VERSION_SHORT variables.
 # We use exec here so we don't import snorkel.
-VERSION: Dict[str, str] = {}
+VERSION: Dict[str, str]={}
 with open("whatsapp_converter/version.py", "r") as version_file:
     exec(version_file.read(), VERSION)
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    long_description=fh.read()
 
 setuptools.setup(
-    name = "whatsapp-converter",
+    name="whatsapp-converter",
     version=VERSION["VERSION"],
     author="Martin Sand",
     author_email="marti.sand.dev@gmail.com",
