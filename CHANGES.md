@@ -1,3 +1,9 @@
+v0.5.2
+Corrected a small bug which prevented the colors.py to be loaded in main
+
+v0.5.1
+Implemented a switch to only show bash color codes for Linux.
+
 v0.5.0
 Added multiline support. Merge it or export it as a new line.
 

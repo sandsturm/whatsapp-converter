@@ -8,8 +8,8 @@ import sys
 import argparse
 from typing import Dict
 
-from whatsapp_converter import colors
 from whatsapp_converter import whatsapp_converter
+from whatsapp_converter import colors
 
 # the path to the directory this file is in
 _MODULE_PATH = os.path.dirname(__file__)
@@ -18,7 +18,7 @@ VERSION: Dict[str, str] = {}
 with open(_MODULE_PATH + "/version.py", "r") as version_file:
     exec(version_file.read(), VERSION)
 
-#---------------------------------------------
+# ---------------------------------------------
 # Supported filetypes for the resultset
 SUPPORTED = (
     ".csv",
