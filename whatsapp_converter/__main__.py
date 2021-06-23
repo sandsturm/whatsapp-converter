@@ -9,8 +9,8 @@ import argparse
 import platform
 from typing import Dict
 
-from whatsapp_converter import colors
 from whatsapp_converter import whatsapp_converter
+from whatsapp_converter import colors
 
 # the path to the directory this file is in
 _MODULE_PATH = os.path.dirname(__file__)
@@ -19,7 +19,7 @@ VERSION: Dict[str, str] = {}
 with open(_MODULE_PATH + "/version.py", "r") as version_file:
     exec(version_file.read(), VERSION)
 
-#---------------------------------------------
+# ---------------------------------------------
 # Supported filetypes for the resultset
 SUPPORTED = (
     ".csv",
@@ -37,7 +37,7 @@ def main():
     parser.add_argument('-d', '--debug', help='increase output verbosity to debug', action='store_true')
     parser.add_argument('--version', action='version', version="v" + VERSION["VERSION"])
 
-    # parser.add_argument("-nl", "--newline", help="message across various lines is counted as a new message", action="store_true")
+    # parser.add_argument("-nl", "--newline", help = "message across various lines is counted as a new message", action = "store_true")
     args = parser.parse_args()
 
     if not str( args.filename ):
@@ -58,6 +58,7 @@ def main():
         sys.exit()
 
     whatsapp_converter.convert(args)
+
 
 if __name__ == "__main__":
     main()
