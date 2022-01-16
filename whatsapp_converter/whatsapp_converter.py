@@ -10,7 +10,6 @@ Use this application to convert your exported WhatsApp chat to a CSV or Excel fi
 import io
 import sys
 import re
-import platform
 import datetime
 from datetime import date
 import pyexcel
@@ -33,6 +32,19 @@ header = [
     "Name",
     "Message"
 ]
+
+formaterrors = {
+    "mdyS": False,
+    "process_again": True,
+}
+
+
+def check_monthfirst(dateformat):
+    if dateformat[1:2] not in ('.', '/'):
+        if int(dateformat[0:2]) > 12:
+            return True
+        else:
+            return False
 
 
 def parse(line, local_args):
@@ -65,6 +77,8 @@ def parse(line, local_args):
             # ---------------------------------------------
             # 21/12/19 Date Format
             if match.group(3) == '/' and match.group(9) == ': ':
+                if local_args.debug:
+                    print("d/m/y Date Format")
                 if len(match.group(5)) == 4:
                     date = datetime.datetime.strptime(match.group(1), "%d/%m/%Y").date()
                 else:
@@ -73,6 +87,8 @@ def parse(line, local_args):
             # ---------------------------------------------
             # 12/21/19 Date Format
             elif match.group(3) == '/' and (match.group(9) == ' -' or match.group(9) == '- '):
+                if local_args.debug:
+                    print("m/d/y Date Format")
                 if len(match.group(5)) == 4 and match.group(7) is None:
                     date = datetime.datetime.strptime(match.group(1), "%d/%m/%Y").date()
                 else:
@@ -81,24 +97,35 @@ def parse(line, local_args):
             # ---------------------------------------------
             # 21/12/2019 Date Format with square brackets and am
             elif match.group(3) == '/' and match.group(9) == '] ' and (match.group(8) == 'am' or match.group(8) == 'pm'):
+                if local_args.debug:
+                    print("d/m/Y Date Format with [square brackets] and am/pm")
                 date = datetime.datetime.strptime(match.group(1), "%d/%m/%Y").date()
-
-            # ---------------------------------------------
-            # 21/12/2019 Date Format with square brackets and AM
-            elif match.group(3) == '/' and match.group(9) == '] ' and (match.group(8) == 'AM' or match.group(8) == 'PM'):
-                if len(match.group(5)) == 4:
-                    date = datetime.datetime.strptime(match.group(1), "%d/%m/%Y").date()
-                else:
-                    date = datetime.datetime.strptime(match.group(1), "%d/%m/%y").date()
 
             # ---------------------------------------------
             # 12/21/2019 Date Format with square brackets
             elif match.group(3) == '/' and match.group(9) == '] ':
-                date = datetime.datetime.strptime(match.group(1), "%m/%d/%Y").date()
+                if local_args.debug:
+                    print("m/d/Y Date Format with [square brackets]")
+                if check_monthfirst(match.group(1)) and not formaterrors["mdyS"]:
+                    formaterrors["mdyS"] = True
+                    formaterrors["process_again"] = True
+                    print("Restart processing due to invalid date format")
+                if formaterrors["mdyS"]:
+                    if len(match.group(5)) == 4:
+                        date = datetime.datetime.strptime(match.group(1), "%d/%m/%Y").date()
+                    else:
+                        date = datetime.datetime.strptime(match.group(1), "%d/%m/%y").date()
+                else:
+                    if len(match.group(5)) == 4:
+                        date = datetime.datetime.strptime(match.group(1), "%m/%d/%Y").date()
+                    else:
+                        date = datetime.datetime.strptime(match.group(1), "%m/%d/%y").date()
 
             # ---------------------------------------------
             # 21.12.19 Date Format
             else:
+                if local_args.debug:
+                    print("d.m.y Date Format")
                 if len(match.group(5)) == 4:
                     date = datetime.datetime.strptime(match.group(1), "%d.%m.%Y").date()
                 else:
@@ -195,45 +222,51 @@ def convert(local_args):
     if local_args.debug:
         print('Open export file ' + local_args.resultset)
 
-    dataset = []
-    dataset.append(header)
-
     # ---------------------------------------------
     # Select export formats
     if str(local_args.resultset).endswith('.xls'):
         if line_count > 65535:
-            if( platform.system() == "Linux" ):
-                print(f'\n{BCOLORS["FAIL"]}Error: Excel 2003 only supports a maximum of 65535 lines. Whatsapp-converter found more than 65535 lines for input which might lead to an error.{BCOLORS["ENDC"]}\n')
-            else:
-                print("Error: Excel 2003 only supports a maximum of 65535 lines. Whatsapp-converter found more than 65535 lines for input which might lead to an error.")
+            print(f'\n{BCOLORS["FAIL"]}Error: Excel 2003 only supports a maximum of 65535 lines. Whatsapp-converter found more than 65535 lines for input which might lead to an error.{BCOLORS["ENDC"]}\n')
             print("")
             sys.exit()
 
-    # ---------------------------------------------
-    # TODO Append line with buffer before writing
-    # Show progress via tqdm
-    for line in tqdm(content, total=line_count, ncols=120):
-        if local_args.debug and line == '':
-            print(line)
+    dataset = []
 
-        buffer = parse(line, local_args)
+    while formaterrors["process_again"]:
 
-        if buffer[0] != 'empty':
+        formaterrors["process_again"] = False
 
-            # ---------------------------------------------
-            # Write to dataset
-            if buffer[0] == 'new' or (local_args.newline and buffer[0] == 'append'):
-                dataset.append(buffer[1:])
-            # Default multiline appended to previous converted message
-            else:
-                dataset[-1][-1] = dataset[-1][-1] + " " + buffer[-1]
+        dataset.clear()
+        dataset.append(header)
 
         # ---------------------------------------------
-        # Print progress
-        if line.strip():
-            counter += 1
+        # TODO Append line with buffer before writing
+        # Show progress via tqdm
+        for line in tqdm(content, total=line_count, ncols=120):
+            if local_args.debug and line == '':
+                print(line)
 
-    print('Writing to ' + str(local_args.resultset))
+            buffer = parse(line, local_args)
+
+            if formaterrors["process_again"]:
+                break
+
+            if buffer[0] != 'empty':
+
+                # ---------------------------------------------
+                # Write to dataset
+                if buffer[0] == 'new' or (local_args.newline and buffer[0] == 'append'):
+                    dataset.append(buffer[1:])
+                # Default multiline appended to previous converted message
+                else:
+                    dataset[-1][-1] = dataset[-1][-1] + " " + buffer[-1]
+
+            # ---------------------------------------------
+            # Print progress
+            if line.strip():
+                counter += 1
+
+        print('Writing to ' + str(local_args.resultset))
 
     # ---------------------------------------------
     # Select export formats
@@ -247,10 +280,7 @@ def convert(local_args):
         pyexcel.save_as(array=dataset, dest_file_name=str(local_args.resultset))
 
     elif str(local_args.resultset).endswith('.ods'):
-        if( platform.system() == "Linux" ):
-            print(f'{BCOLORS["WARNING"]}NOTE: The writing of the ODS file takes some time. Your terminal did not crash. Please wait ...{BCOLORS["ENDC"]}')
-        else:
-            print("NOTE: The writing of the ODS file takes some time. Your terminal did not crash. Please wait ...")
+        print(f'{BCOLORS["WARNING"]}NOTE: The writing of the ODS file takes some time. Your terminal did not crash. Please wait ...{BCOLORS["ENDC"]}')
         pyexcel.save_as(array=dataset, dest_file_name=str(local_args.resultset))
 
     print('Wrote ' + str(counter) + ' lines')

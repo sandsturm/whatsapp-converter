@@ -1,5 +1,5 @@
-v0.5.4
-Added 21/12/2019 Date Format with square brackets and AM
+v0.5.5
+Added 21/12/19 Date Format with square brackets and some date format error coverage
 
 v0.5.3
 Added 21/12/2019 Date Format with square brackets and am
