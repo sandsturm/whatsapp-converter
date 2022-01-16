@@ -1,4 +1,4 @@
-v0.5.5
+v0.5.6
 Added 21/12/19 Date Format with square brackets and some date format error coverage
 
 v0.5.3
