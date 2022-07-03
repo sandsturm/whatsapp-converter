@@ -111,12 +111,17 @@ def parse(line, filename, resultset, newline, verbose, debug):
         if debug:
             print("Appending line found")
 
-        newline = (re.match(re.compile(r"^(.*)", re.VERBOSE), line))
+        text = (re.match(re.compile(r"^(.*)", re.VERBOSE), line))
 
         # ---------------------------------------------
         # Create the dataset if commandline argument was to create a new line
         # TODO if (newline):
-        dataset = ['append', str(lastentry["lastdate"]) + " " + str(lastentry["lasttime"]), str(lastentry["lastdate"]), str(lastentry["lasttime"]), lastentry["lastname"], newline.group(0)]
+        print(newline)
+        if newline:
+            dataset = ['new', str(lastentry["lastdate"]) + " " + str(lastentry["lasttime"]), str(lastentry["lastdate"]), str(lastentry["lasttime"]), lastentry["lastname"], text.group(0)]
+
+        else:
+            dataset = ['append', str(lastentry["lastdate"]) + " " + str(lastentry["lasttime"]), str(lastentry["lastdate"]), str(lastentry["lasttime"]), lastentry["lastname"], text.group(0)]
 
     return dataset
 

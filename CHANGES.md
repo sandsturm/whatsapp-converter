@@ -1,3 +1,6 @@
+v0.6.1
+Newline command line argument fixed.
+
 v0.6.0
 Fixed a bug which did not allow to import and use the convert function in Python applications.
 
