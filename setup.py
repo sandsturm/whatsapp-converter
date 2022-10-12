@@ -28,7 +28,7 @@ setuptools.setup(
         'pyexcel-ods3'
     ],
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
