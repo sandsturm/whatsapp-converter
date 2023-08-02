@@ -9,7 +9,7 @@ import argparse
 import platform
 from typing import Dict
 
-from whatsapp_converter import whatsapp_converter
+import whatsapp_converter
 from whatsapp_converter import colors
 
 # the path to the directory this file is in
@@ -57,7 +57,7 @@ def main():
         print(SUPPORTED)
         sys.exit()
 
-    whatsapp_converter.convert(args)
+    whatsapp_converter.convert(filename=args.filename, resultset=args.resultset, newline=args.newline, verbose=args.verbose, debug=args.debug)
 
 
 if __name__ == "__main__":

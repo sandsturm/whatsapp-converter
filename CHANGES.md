@@ -1,7 +1,13 @@
-v0.5.6
+v0.6.2
 Improved the algorithmic efficiency
 
-v0.5.5
+v0.6.1
+Newline command line argument fixed.
+
+v0.6.0
+Fixed a bug which did not allow to import and use the convert function in Python applications.
+
+v0.5.7
 Added 21/12/19 Date Format with square brackets and some date format error coverage
 
 v0.5.3
