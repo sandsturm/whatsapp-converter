@@ -15,7 +15,6 @@ from datetime import date
 import pyexcel
 from tqdm import tqdm
 
-from whatsapp_converter.colors import BCOLORS
 
 lastentry = {
     "lastdate": date.today(),
@@ -54,11 +53,17 @@ def parse(line, local_args):
     args = Arguments from the command line. In this case only verbose and debug switches.
     '''
 
+    # Define the placeholders for the date format components
+    day_placeholder = r'(\d{1,2})'
+    month_placeholder = r'(\d{1,2})'
+    year_placeholder = r'(\d{2}|\d{4})'
+    hour_placeholder = r'(\d{1,2})'
+    minute_placeholder = r'(\d{1,2})'
+
     # ---------------------------------------------
     # The main regex logic to identify the date and message
-    pattern_date = '^\[?((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,4}))\,?\ (\d{1,2}[:|.]\d{1,2})([:|.]\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ |\]\ ][^:])'
-    pattern = pattern_date + '(.+?)\:\ (.*)'
-
+    pattern_date = re.compile('^\[?((\d{1,2})([\/|\.])(\d{1,2})[\/|\.](\d{1,4}))\,?\ (\d{1,2}[:|.]\d{1,2})([:|.]\d{1,2})?\ ?(AM|PM|am|pm)?([\:\ |\ \-\ |\]\ ][^:])(.+?)\:\ (.*)')
+    match = pattern_date.match(line)
     dataset = ['empty', '', '', '', '', '']
 
     # ---------------------------------------------
@@ -66,11 +71,7 @@ def parse(line, local_args):
     # if verbose: print(BCOLORS.FAIL + prefix + line)
     # Identify the date format in the chat line
 
-    if re.match(re.compile(pattern, re.VERBOSE), line):
-
-        # ---------------------------------------------
-        # Make the match, assign to the groups
-        match = re.match(re.compile(pattern, re.VERBOSE), line)
+    if match:
 
         if match and match.group(10) !=  'M':
 
@@ -197,16 +198,8 @@ def convert(local_args):
         with io.open(local_args.filename, "r", encoding="utf-8") as file:
             print("Reading import file")
 
-            content = []
-
-            for line in file:
-                # ---------------------------------------------
-                # Explicetly opened the file two times to show progress in user interface
-                line_count += 1
-
-                # ---------------------------------------------
-                # Read lines into a list
-                content.append(line)
+            content = file.readlines()  # Read all lines at once
+            line_count = len(content)  # Get the number of read lines
 
     except IOError as e:
         print("File \"" + local_args.filename + "\" cannot be found.")

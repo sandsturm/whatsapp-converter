@@ -1,3 +1,6 @@
+v0.5.6
+Improved the algorithmic efficiency
+
 v0.5.5
 Added 21/12/19 Date Format with square brackets and some date format error coverage
 
