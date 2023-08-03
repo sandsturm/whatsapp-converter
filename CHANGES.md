@@ -1,3 +1,6 @@
+v0.6.3
+Improved the algorithmic efficiency
+
 v0.6.2
 Improved the algorithmic efficiency
 
