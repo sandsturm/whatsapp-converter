@@ -6,7 +6,9 @@ jobs:
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ubuntu-latest
-    environment: release
+    environment:
+      name: pypi
+      url: https://pypi.org/project/whatsapp-converter/
     permissions:
       id-token: write
 
