@@ -36,6 +36,11 @@ jobs:
     
     - name: Publish distribution 📦 to Test PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
+      environment:
+        name: testpypi
+        url: https://pypi.org/project/whatsapp-converter/
+      permissions:
+        id-token: write
       with:
         repository-url: https://test.pypi.org/legacy/
     
