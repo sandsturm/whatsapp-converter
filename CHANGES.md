@@ -1,3 +1,6 @@
+v0.6.4
+Corrected small bug
+
 v0.6.3
 Improved the algorithmic efficiency
 

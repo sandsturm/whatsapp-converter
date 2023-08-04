@@ -68,7 +68,7 @@ def parse(line, filename, resultset, newline, verbose, debug):
     # ---------------------------------------------
     # if verbose: print(prefix + line)
     # if verbose: print(BCOLORS.FAIL + prefix + line)
-    # Identify the date format in the chat line
+    # Identify the in the chat line
 
     if match:
 
@@ -93,7 +93,7 @@ def parse(line, filename, resultset, newline, verbose, debug):
             # Create the dataset for the new message
             dataset = ['new', date.strftime("%Y-%m-%d") + " " + time.strftime("%H:%M"), date.strftime("%Y-%m-%d"), time.strftime("%H:%M"), str(match.group(10)), match.group(11)]
 
-            if verbose | debug:
+            if verbose or debug:
                 print(dataset)
 
     elif re.match(re.compile(r"^[\t ]*\n", re.VERBOSE), line):
@@ -115,7 +115,7 @@ def parse(line, filename, resultset, newline, verbose, debug):
         # ---------------------------------------------
         # Create the dataset if commandline argument was to create a new line
         # TODO if (newline):
-        print(newline)
+        # print(newline)
         if newline:
             dataset = ['new', str(lastentry["lastdate"]) + " " + str(lastentry["lasttime"]), str(lastentry["lastdate"]), str(lastentry["lasttime"]), lastentry["lastname"], text.group(0)]
 
@@ -149,45 +149,54 @@ def convert(filename, resultset="resultset.csv", newline=False, verbose=False, d
 
             content = file.readlines()  # Read all lines at once
             line_count = len(content)  # Get the number of read lines
+            confirmed_date = False  # Exit condition for For loop based on a date > 12
 
-                if re.match(re.compile(pattern, re.VERBOSE), line):
+            for line in content:
+
+                if confirmed_date == True:
+                    break
+
+                if not line.strip():  # Check if the line is empty or contains only whitespace
+                    continue  # Skip the rest of the loop and move to the next iteration
+
+                # ---------------------------------------------
+                # Make the match, assign to the groups
+                match = re.match(re.compile(pattern, re.VERBOSE), line)
+                
+                if match:
 
                     # ---------------------------------------------
-                    # Make the match, assign to the groups
-                    match = re.match(re.compile(pattern, re.VERBOSE), line)
-
-                    # ---------------------------------------------
-                    # 21/12/19 Date Format
-                    if match.group(3) == '/' and match.group(9) == ': ':
+                    # 21/12/19
+                    if match.group(3) == '/' and (match.group(9) == ' -' or match.group(9) == '- ' or match.group(9) == ': '):
                         if debug:
-                            print("d/m/y Date Format")
+                            print("Date format d/m/y")
                         if len(match.group(5)) == 4:
                             date_formats["date_format"] = "%d/%m/%Y"
                         else:
                             date_formats["date_format"] = "%d/%m/%y"
 
                     # ---------------------------------------------
-                    # 12/21/19 Date Format
+                    # 12/21/19
                     elif match.group(3) == '/' and (match.group(9) == ' -' or match.group(9) == '- '):
                         if debug:
-                            print("m/d/y Date Format")
+                            print("Date format m/d/y")
                         if len(match.group(5)) == 4 and match.group(7) is None:
                             date_formats["date_format"] = "%m/%d/%Y"
                         else:
                             date_formats["date_format"] = "%m/%d/%y"
 
                     # ---------------------------------------------
-                    # 21/12/2019 Date Format with square brackets and am
+                    # 21/12/2019 with square brackets and am
                     elif match.group(3) == '/' and match.group(9) == '] ' and (match.group(8) == 'am' or match.group(8) == 'pm'):
                         if debug:
-                            print("d/m/Y Date Format with [square brackets] and am/pm")
+                            print("Date format d/m/Y with [square brackets] and am/pm")
                         date_formats["date_format"] = "%d/%m/%Y"
 
                     # ---------------------------------------------
-                    # 12/21/2019 Date Format with square brackets
+                    # 12/21/2019 with square brackets
                     elif match.group(3) == '/' and match.group(9) == '] ':
                         if debug:
-                            print("m/d/Y Date Format with [square brackets]")
+                            print("Date format m/d/Y with [square brackets]")
                         if check_monthfirst(match.group(1)) and not date_formats["mdyS"]:
                             date_formats["mdyS"] = True
                             date_formats["date_format"] = "%d/%m/%Y"
@@ -203,10 +212,10 @@ def convert(filename, resultset="resultset.csv", newline=False, verbose=False, d
                                 date_formats["date_format"] = "%m/%d/%y"
 
                     # ---------------------------------------------
-                    # 21.12.19 Date Format
+                    # 21.12.19
                     else:
                         if debug:
-                            print("d.m.y Date Format")
+                            print("Date format d.m.y")
                         if len(match.group(5)) == 4:
                             date = datetime.datetime.strptime(match.group(1), "%d.%m.%Y").date()
                             date_formats["date_format"] = "%d.%m.%Y"
@@ -217,7 +226,7 @@ def convert(filename, resultset="resultset.csv", newline=False, verbose=False, d
         print("File \"" + filename + "\" cannot be found.")
         sys.exit()
 
-    print("Converting data now")
+    print("Converting data now with data format " + date_formats["date_format"])
 
     # ---------------------------------------------
     # Count number of chatlines without  linesError: Excel 2003 only supports a maximum of 65535 lines.
